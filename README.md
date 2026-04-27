@@ -1,125 +1,96 @@
 <div align="center">
-  <img src="https://github.com/Baryon-ai.png" width="80" height="80" style="border-radius:50%">
-  <h1>Free Linkmoa 🔗</h1>
-  <p><strong>AI-Native 링크 관리 서비스 — 자연어로 편집, 자동 배포</strong></p>
+  <img src="https://github.com/Baryon-ai.png" width="80" height="80" style="border-radius:50%" alt="Baryon Labs">
+
+  # Free Linkmoa
+
+  AI-native link-in-bio builder with YAML editing, automatic deployment, and MCP control
 
   [![Deploy GitHub Pages](https://github.com/baryonlabs/free-linkmoa/actions/workflows/pages.yml/badge.svg)](https://github.com/baryonlabs/free-linkmoa/actions/workflows/pages.yml)
   [![Sync to Vercel](https://github.com/baryonlabs/free-linkmoa/actions/workflows/sync-content.yml/badge.svg)](https://github.com/baryonlabs/free-linkmoa/actions/workflows/sync-content.yml)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](linkflow/LICENSE)
+
+  [GitHub Pages Demo](https://baryonlabs.github.io/free-linkmoa/) · [Vercel Demo](https://free-linkmoa.vercel.app) · [Workflow Guide](./docs/workflow.md)
 </div>
 
 ---
 
-## 데모
+## What is Free Linkmoa?
 
-| 배포 방식 | 링크 | 특징 |
-|-----------|------|------|
-| **GitHub Pages** (정적) | [baryonlabs.github.io/free-linkmoa](https://baryonlabs.github.io/free-linkmoa/) | YAML 수정 → 자동 빌드 |
-| **Vercel + Turso** (풀스택) | [free-linkmoa.vercel.app](https://free-linkmoa.vercel.app) | Next.js + SQLite Edge DB |
+Free Linkmoa is a public build project for making a personal link-in-bio page that can be edited by hand, through Claude Code, or through an MCP server.
 
-<div align="center">
-  <a href="https://baryonlabs.github.io/free-linkmoa/">
-    <img src="https://img.shields.io/badge/GitHub_Pages-라이브_데모_보기-0a0f1e?style=for-the-badge&logo=github&logoColor=white" height="40">
-  </a>
-  &nbsp;
-  <a href="https://free-linkmoa.vercel.app">
-    <img src="https://img.shields.io/badge/Vercel-라이브_데모_보기-000000?style=for-the-badge&logo=vercel&logoColor=white" height="40">
-  </a>
-</div>
+It has two working tracks:
 
----
+| Track | URL | Best for |
+|------|-----|----------|
+| **GitHub Pages** | [baryonlabs.github.io/free-linkmoa](https://baryonlabs.github.io/free-linkmoa/) | A static profile generated from `gh-pages/config.yml` |
+| **Vercel + Turso** | [free-linkmoa.vercel.app](https://free-linkmoa.vercel.app) | A full-stack app with auth, dashboard, API, analytics, and SQLite Edge DB |
 
-## 이런 서비스입니다
+The core idea is simple:
 
-인스타, 유튜브, GitHub 등 내 링크를 한 곳에 모아서 관리하는 **링크인바이오** 서비스를
-**Claude Code(AI)에게 말만 하면** 알아서 수정하고 배포합니다.
-
-```
-나: "당근 모임 링크 추가해줘 https://..."
+```text
+"Add this link to my profile"
         ↓
-Claude: config.yml 수정 → git commit → git push
+Claude Code edits YAML or calls the API
         ↓
-GitHub Actions: 자동 빌드 → 배포 완료 (약 1분)
+GitHub Actions / Vercel deploy the update
+        ↓
+Your public link page is live
 ```
 
-### 주요 기능
+## Screenshots
 
-- **마우스 추적 3D 틸트** — 카드가 마우스 방향으로 입체감 있게 기울어짐
-- **썸네일 + 이모지** — 링크마다 이미지 또는 큰 이모지 표시
-- **YAML 기반 CMS** — 코드 없이 파일 하나로 전체 콘텐츠 관리
-- **이중 배포** — GitHub Pages(정적) + Vercel(풀스택) 동시 지원
-- **AI 자연어 편집** — Claude Code에 말로 요청하면 자동 반영
-
----
-
-## 스크린샷
-
-> 아래 링크에서 라이브로 확인하세요.
-
-| GitHub Pages (정적 사이트) | Vercel 공개 프로필 | Vercel 대시보드 |
+| GitHub Pages | Vercel Profile | Vercel Dashboard |
 |:---:|:---:|:---:|
 | [![GitHub Pages](docs/images/github-pages.png)](https://baryonlabs.github.io/free-linkmoa/) | [![Vercel Profile](docs/images/vercel-profile-aiswai2.png)](https://free-linkmoa.vercel.app/aiswai2) | [![Vercel Dashboard](docs/images/vercel-dashboard.png)](https://free-linkmoa.vercel.app/dashboard) |
-| [baryonlabs.github.io/free-linkmoa](https://baryonlabs.github.io/free-linkmoa/) | [/aiswai2](https://free-linkmoa.vercel.app/aiswai2) | [/dashboard](https://free-linkmoa.vercel.app/dashboard) |
-| YAML 수정 → 자동 빌드 | 공개 링크 페이지 | 링크 관리 대시보드 |
+| Static page from YAML | Public profile page | Link management dashboard |
 
----
+## Features
 
-## 폴더 구조
+### YAML CMS
 
-```
-free-linkmoa/
-│
-├── 📁 gh-pages/               # 실습 0: GitHub Pages 정적 사이트
-│   ├── config.yml             #   ✏️ 여기만 수정하면 끝 (프로필, 링크, 테마)
-│   └── build.mjs              #   YAML → HTML 빌드 스크립트
-│
-├── 📁 linkflow/               # 실습 1: Vercel + Turso 풀스택 앱
-│   ├── content.yml            #   ✏️ 수정 → push → Vercel 자동 반영
-│   └── apps/web/              #   Next.js 앱 (API, 대시보드, 공개 프로필)
-│
-├── 📁 practices/              # 향후 실습 공간
-│   ├── 02-fly-io/             #   실습 2: Fly.io 컨테이너 배포 (예정)
-│   ├── 03-cloudflare-pages/   #   실습 3: Cloudflare Pages + D1 (예정)
-│   └── 04-docker-compose/     #   실습 4: 로컬 Docker 풀스택 (예정)
-│
-├── 📁 docs/                   # 문서
-│   └── workflow.md            #   실습 워크플로우 상세 가이드
-│
-├── 📁 scripts/                # 공용 설정 스크립트
-│   ├── sync-content.sh        #   content.yml → Vercel API 동기화
-│   ├── turso-setup.sh         #   Turso DB 생성 + 스키마 마이그레이션
-│   └── mcp-setup.sh           #   Claude Desktop MCP 서버 연결
-│
-└── .github/workflows/
-    ├── pages.yml              #   GitHub Pages 자동 빌드
-    └── sync-content.yml       #   content.yml 변경 시 Vercel 동기화
+Edit one file to change the profile, links, icons, thumbnails, and theme. The GitHub Pages version is built from `gh-pages/config.yml`; the Vercel sync flow reads from `linkflow/content.yml`.
+
+### Automatic deploys
+
+Push to `main` and GitHub Actions builds the static page. The Vercel track can also sync YAML content into the Turso database through the provided workflow and scripts.
+
+### AI-native editing
+
+Use Claude Code to make natural-language changes like:
+
+```text
+"Change my bio to 'AI로 세상을 바꾸는 개발자'"
+"Add my Instagram link: https://instagram.com/..."
+"Disable the YouTube link"
+"Make the background purple"
 ```
 
----
+Claude updates the right file, commits the change, and lets the deployment pipeline publish it.
 
-## 실습 목록
+### Full-stack dashboard
 
-| # | 방식 | 폴더 | 배포 URL | 상태 |
-|---|------|------|----------|------|
-| 0 | GitHub Pages (정적) | `gh-pages/` | [baryonlabs.github.io/free-linkmoa](https://baryonlabs.github.io/free-linkmoa/) | ✅ 완료 |
-| 1 | Vercel + Turso | `linkflow/` | [free-linkmoa.vercel.app](https://free-linkmoa.vercel.app) | ✅ 완료 |
-| 2 | Fly.io | `practices/02-fly-io/` | - | 🔜 예정 |
-| 3 | Cloudflare Pages + D1 | `practices/03-cloudflare-pages/` | - | 🔜 예정 |
-| 4 | Docker Compose | `practices/04-docker-compose/` | - | 🔜 예정 |
+The Vercel app includes registration, login, profile editing, link CRUD, drag-and-drop ordering, theme settings, subscriber export, analytics pages, and public profile routes.
 
----
+### MCP server
 
-## 5분 빠른 시작 (GitHub Pages)
+The included MCP server connects Claude Desktop to the Vercel API, so you can manage links through conversation instead of clicking through a dashboard.
 
-### 1. 포크 & 클론
+### 3D link cards
+
+The static site includes mouse-tracked card tilt, thumbnails or emoji fallbacks, and a focused profile layout for creator links.
+
+## Quick Start
+
+### GitHub Pages
+
+Fork or clone this repository:
 
 ```bash
-# 이 저장소를 포크한 뒤
 git clone https://github.com/YOUR_USERNAME/free-linkmoa.git
 cd free-linkmoa
 ```
 
-### 2. `gh-pages/config.yml` 수정
+Edit `gh-pages/config.yml`:
 
 ```yaml
 profile:
@@ -131,16 +102,11 @@ links:
   - title: "GitHub"
     url: "https://github.com/MY_USERNAME"
     icon: "github"
-    thumbnail: "https://github.com/MY_USERNAME.png"   # 선택
-    enabled: true
-
-  - title: "YouTube"
-    url: "https://youtube.com/@MY_CHANNEL"
-    icon: "youtube"
+    thumbnail: "https://github.com/MY_USERNAME.png"
     enabled: true
 ```
 
-### 3. 로컬 미리보기 (선택)
+Preview locally:
 
 ```bash
 cd gh-pages
@@ -149,105 +115,118 @@ node build.mjs
 open ../out/index.html
 ```
 
-### 4. 배포 (push → 자동)
+Deploy by pushing to `main`:
 
 ```bash
 git add gh-pages/config.yml
-git commit -m "내 프로필 설정"
+git commit -m "Update my profile"
 git push origin main
-# → GitHub Actions가 자동으로 빌드 & 배포 (약 1분)
 ```
 
-### GitHub Pages 활성화
+Then enable `Settings -> Pages -> Source: GitHub Actions` in your repository.
 
-저장소 `Settings → Pages → Source: GitHub Actions` 로 설정
+### Vercel + Turso
 
----
-
-## AI로 수정하기 (Claude Code)
-
-Claude Code를 사용하면 말만 해도 자동 수정 + 배포됩니다.
-
-```
-"소개글을 'AI로 세상을 바꾸는 개발자'로 바꿔줘"
-"인스타 링크 추가해줘 https://instagram.com/..."
-"배경색 보라색으로 바꿔줘"
-"YouTube 링크 비활성화해줘"
-```
-
-자세한 워크플로우: **[docs/workflow.md](./docs/workflow.md)**
-
----
-
-## MCP 서버 — Claude Desktop 연결
-
-LinkFlow MCP 서버를 Claude Desktop에 연결하면 **대화만으로** 링크를 관리할 수 있습니다.
+Create the database and apply the schema:
 
 ```bash
-# 1회 설정 (로그인 + Claude Desktop 자동 등록)
-bash scripts/mcp-setup.sh
-```
-
-Claude Desktop 재시작 후 대화창에서 바로 사용:
-
-| 자연어 요청 | MCP 툴 | 동작 |
-|------------|--------|------|
-| `내 링크 목록 보여줘` | `list_links` | 전체 링크 조회 |
-| `YouTube 링크 추가해줘: https://...` | `create_link` | 링크 생성 |
-| `GitHub 링크 설명 바꿔줘` | `update_link` | 링크 수정 |
-| `링크 3개 한번에 추가해줘` | `create_link` × 3 (병렬) | 동시 추가 |
-| `프로필 소개글 수정해줘` | `update_profile` | 프로필 업데이트 |
-| `링크 순서 바꿔줘` | `reorder_links` | 순서 변경 |
-
-```
-Claude Desktop → stdio → MCP Server → HTTPS → Vercel API → Turso DB
-```
-
----
-
-## 실습 1: Vercel + Turso 시작하기
-
-```bash
-# 1. Turso DB 생성 + 스키마 적용
 bash scripts/turso-setup.sh
+```
 
-# 2. Vercel 환경변수 설정 후 배포
+Configure Vercel environment variables:
+
+```bash
 vercel env add TURSO_DATABASE_URL
 vercel env add TURSO_AUTH_TOKEN
 vercel env add JWT_SECRET
 vercel deploy --prod --cwd linkflow/apps/web
 ```
 
-`linkflow/content.yml`을 수정하고 push하면 GitHub Actions가 자동으로 Vercel 앱 DB에 동기화합니다.
+After that, edit `linkflow/content.yml` and push. GitHub Actions can sync the content into the Vercel app database.
 
-자세한 내용: [DEPLOY.md](./DEPLOY.md)
+More deployment detail is in [DEPLOY.md](./DEPLOY.md).
 
----
+## MCP Usage
+
+Set up Claude Desktop once:
+
+```bash
+bash scripts/mcp-setup.sh
+```
+
+Restart Claude Desktop, then manage links with natural language:
+
+| Request | MCP tool | Result |
+|---------|----------|--------|
+| `내 링크 목록 보여줘` | `list_links` | Lists all links |
+| `YouTube 링크 추가해줘: https://...` | `create_link` | Creates a link |
+| `GitHub 링크 설명 바꿔줘` | `update_link` | Updates a link |
+| `링크 3개 한번에 추가해줘` | `create_link` x 3 | Adds links in parallel |
+| `프로필 소개글 수정해줘` | `update_profile` | Updates profile data |
+| `링크 순서 바꿔줘` | `reorder_links` | Reorders links |
+
+```text
+Claude Desktop -> stdio -> MCP Server -> HTTPS -> Vercel API -> Turso DB
+```
+
+## Project Layout
+
+```text
+free-linkmoa/
+├── gh-pages/                 # Static GitHub Pages version
+│   ├── config.yml            # Profile, links, and theme content
+│   └── build.mjs             # YAML -> HTML builder
+├── linkflow/                 # Vercel + Turso full-stack app
+│   ├── content.yml           # YAML content synced to the app
+│   ├── apps/web/             # Next.js app, API, dashboard, public profile
+│   └── apps/mcp-server/      # Claude Desktop MCP server
+├── practices/                # Future deployment exercises
+├── docs/                     # Workflow and supporting docs
+├── scripts/                  # Setup, deploy, sync, and MCP scripts
+└── .github/workflows/        # GitHub Pages and Vercel sync workflows
+```
+
+## Practice Tracks
+
+| # | Method | Folder | Deployment | Status |
+|---|--------|--------|------------|--------|
+| 0 | GitHub Pages | `gh-pages/` | [baryonlabs.github.io/free-linkmoa](https://baryonlabs.github.io/free-linkmoa/) | Done |
+| 1 | Vercel + Turso | `linkflow/` | [free-linkmoa.vercel.app](https://free-linkmoa.vercel.app) | Done |
+| 2 | Fly.io | `practices/02-fly-io/` | Planned | Planned |
+| 3 | Cloudflare Pages + D1 | `practices/03-cloudflare-pages/` | Planned | Planned |
+| 4 | Docker Compose | `practices/04-docker-compose/` | Planned | Planned |
 
 ## Tech Stack
 
-| 영역 | 기술 |
-|------|------|
-| 정적 사이트 | Vanilla HTML/CSS/JS, js-yaml |
-| 풀스택 앱 | Next.js 14, TypeScript, Tailwind CSS |
-| 데이터베이스 | Turso (LibSQL / SQLite Edge) |
-| 인증 | JWT + bcryptjs |
-| 배포 | GitHub Pages, Vercel |
-| 자동화 | GitHub Actions |
-| AI 편집 | Claude Code + linkflow skill |
-| MCP 서버 | @modelcontextprotocol/sdk, tsx |
+| Area | Technology |
+|------|------------|
+| Static site | Vanilla HTML/CSS/JS, js-yaml |
+| Full-stack app | Next.js 14, TypeScript, Tailwind CSS |
+| Database | Turso, LibSQL, SQLite Edge |
+| Auth | JWT, bcryptjs |
+| Deployment | GitHub Pages, Vercel |
+| Automation | GitHub Actions |
+| AI editing | Claude Code, linkflow skill |
+| MCP server | `@modelcontextprotocol/sdk`, tsx |
 
----
+## Documentation
 
-## 관련 링크
+- [Workflow guide](./docs/workflow.md)
+- [Deployment guide](./DEPLOY.md)
+- [Linkflow quickstart](./linkflow/QUICKSTART.md)
+- [MCP server guide](./linkflow/apps/mcp-server/README.md)
 
-- [인프런 챌린지 — "앱 커팅"시대! 나를 위한 앱 만들고 공유하기](https://www.inflearn.com/challenge/quot%EC%95%B1-%EC%BB%A4%ED%8C%85quot%EC%8B%9C%EB%8C%80-%EB%82%98%EB%A5%BC-%EC%9C%84%ED%95%9C?cid=341120)
-- [Baryon Labs 인프런](https://www.inflearn.com/users/44011/@baryonai)
+## Related Links
+
+- [Inflearn challenge](https://www.inflearn.com/challenge/quot%EC%95%B1-%EC%BB%A4%ED%8C%85quot%EC%8B%9C%EB%8C%80-%EB%82%98%EB%A5%BC-%EC%9C%84%ED%95%9C?cid=341120)
+- [Baryon Labs on Inflearn](https://www.inflearn.com/users/44011/@baryonai)
 - [Baryon Labs YouTube](https://www.youtube.com/@codcatprofessor/shorts)
 
----
+## License
+
+MIT. See [linkflow/LICENSE](linkflow/LICENSE).
 
 <div align="center">
-  Built with ❤️ by <a href="https://labs.baryon.ai">Baryon Labs</a><br>
+  Built by <a href="https://labs.baryon.ai">Baryon Labs</a><br>
   Public Build · Open Source · AI-Native
 </div>
