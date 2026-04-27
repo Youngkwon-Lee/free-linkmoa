@@ -310,11 +310,15 @@ The recommended learning path is not to understand the whole codebase at once. S
 
 - [Baryon Labs YouTube](https://www.youtube.com/@codcatprofessor/shorts)
 
-## License
+## Copyright and Course Use
 
-MIT. See [linkflow/LICENSE](linkflow/LICENSE).
+The copyright for this code and documentation belongs to Baryon Labs.
+
+Free Linkmoa is used as a course example at [vibecamp.us](https://vibecamp.us) for teaching vibe coding and AI coding. The course uses this repository to show how to build, deploy, and iteratively modify a link-in-bio service with AI while learning the practical CS knowledge needed to review and guide AI-generated code.
+
+The project is licensed under MIT. See [linkflow/LICENSE](linkflow/LICENSE).
 
 <div align="center">
   Built by <a href="https://labs.baryon.ai">Baryon Labs</a><br>
-  Public Build · Open Source · AI-Native
+  VibeCamp Course Example · Public Build · Open Source · AI-Native
 </div>

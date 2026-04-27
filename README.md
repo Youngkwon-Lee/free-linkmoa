@@ -308,11 +308,15 @@ Free Linkmoa를 만드는 과정에서 한 가지가 더 분명해졌습니다. 
 
 - [Baryon Labs YouTube](https://www.youtube.com/@codcatprofessor/shorts)
 
-## 라이선스
+## 저작권 및 강의 사용
 
-MIT. 자세한 내용은 [linkflow/LICENSE](linkflow/LICENSE)를 참고하세요.
+이 코드와 문서의 저작권은 Baryon Labs에 있습니다.
+
+Free Linkmoa는 [vibecamp.us](https://vibecamp.us)에서 바이브코딩과 AI coding을 설명하기 위한 강의 예제로 사용됩니다. 강의에서는 이 저장소를 바탕으로 링크인바이오 서비스를 만들고, 배포하고, AI와 함께 수정하는 과정을 통해 실전 개발 흐름과 필요한 CS 지식을 함께 다룹니다.
+
+라이선스는 MIT입니다. 자세한 내용은 [linkflow/LICENSE](linkflow/LICENSE)를 참고하세요.
 
 <div align="center">
   Built by <a href="https://labs.baryon.ai">Baryon Labs</a><br>
-  Public Build · Open Source · AI-Native
+  VibeCamp Course Example · Public Build · Open Source · AI-Native
 </div>
