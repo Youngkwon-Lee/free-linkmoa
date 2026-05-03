@@ -181,6 +181,7 @@ const css = `
   }
 
   footer { text-align: center; margin-top: 3rem; font-size: 0.78rem; opacity: 0.35; }
+  footer p { margin: 0.45rem 0 0; }
   footer a { color: inherit; text-decoration: none; }
 `.trim();
 
@@ -209,6 +210,10 @@ const html = `<!DOCTYPE html>
     </div>
     <footer>
       <a href="https://github.com/baryonlabs/free-linkmoa">Powered by free-linkmoa</a>
+      <p>
+        이 프로젝트는 <a href="https://ai-native.vibecamp.us">ai-native.vibecamp.us</a>에서 소개하고 있습니다.
+        자세히 배우고 싶은 팀이나 조직은 컨택해 주세요.
+      </p>
     </footer>
   </div>
 

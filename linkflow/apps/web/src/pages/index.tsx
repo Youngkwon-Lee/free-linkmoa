@@ -166,6 +166,13 @@ export default function Home() {
             </div>
             <div className="border-t border-slate-700 pt-8 text-center text-sm">
               <p>&copy; 2026 LinkFlow. All rights reserved. Open source and self-hostable.</p>
+              <p className="mt-3 text-slate-400">
+                이 프로젝트는{' '}
+                <a href="https://ai-native.vibecamp.us" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  ai-native.vibecamp.us
+                </a>
+                에서 소개하고 있습니다. 자세히 배우고 싶은 팀이나 조직은 컨택해 주세요.
+              </p>
             </div>
           </div>
         </footer>

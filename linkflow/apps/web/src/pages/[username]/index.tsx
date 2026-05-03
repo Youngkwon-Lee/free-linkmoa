@@ -344,6 +344,13 @@ export default function PublicProfile({ profile, error }: Props) {
               Baryon Labs
             </a>
           </p>
+          <p className="mt-3">
+            이 프로젝트는{' '}
+            <a href="https://ai-native.vibecamp.us" target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 dark:hover:text-white transition-colors">
+              ai-native.vibecamp.us
+            </a>
+            에서 소개하고 있습니다. 자세히 배우고 싶은 팀이나 조직은 컨택해 주세요.
+          </p>
         </div>
       </div>
     </>
