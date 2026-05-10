@@ -19,9 +19,9 @@ links:
     enabled: true
 
   - title: "LinkedIn"
-    url: ""
+    url: "https://www.linkedin.com/in/youngkwon-lee-5872b61b3/"
     icon: "linkedin"
-    enabled: false
+    enabled: true
 
   - title: "YouTube"
     url: ""
