@@ -39,6 +39,6 @@ links:
     enabled: true
 
   - title: "X"
-    url: ""
+    url: "https://x.com/Yoonjun_dev"
     icon: "twitter"
-    enabled: false
+    enabled: true
