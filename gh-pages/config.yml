@@ -29,9 +29,9 @@ links:
     enabled: false
 
   - title: "Instagram"
-    url: ""
+    url: "https://www.instagram.com/young_kwon_/"
     icon: "instagram"
-    enabled: false
+    enabled: true
 
   - title: "Threads"
     url: "https://www.threads.com/@young_kwon_"
