@@ -34,9 +34,9 @@ links:
     enabled: false
 
   - title: "Threads"
-    url: ""
+    url: "https://www.threads.com/@young_kwon_"
     icon: "threads"
-    enabled: false
+    enabled: true
 
   - title: "X"
     url: ""
