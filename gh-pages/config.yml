@@ -1,7 +1,7 @@
 profile:
-  name: "Baryon Labs"
-  bio: "AI-native 개발 & 교육 🚀 | Claude AI로 함께 만들어가는 미래"
-  avatar: "https://github.com/Baryon-ai.png"
+  name: "Youngkwon"
+  bio: "AI Builder"
+  avatar: "https://github.com/Youngkwon-Lee.png"
 
 theme:
   background: "#0a0f1e"
@@ -12,44 +12,33 @@ theme:
   accent: "#3b82f6"
 
 links:
-  - title: "당근 'AI로 사업강화' 모임"
-    url: "https://www.daangn.com/kr/group/%ED%81%B4%EB%A1%9C%EB%93%9C-ai%EB%A1%9C-%EC%82%AC%EC%97%85%EA%B0%95%ED%99%94-xwcut6bs4u3x/post/"
-    icon: "carrot"
-    enabled: true
-
-  - title: "YouTube"
-    url: "https://www.youtube.com/@codcatprofessor/shorts"
-    icon: "youtube"
+  - title: "GitHub"
+    url: "https://github.com/Youngkwon-Lee"
+    icon: "github"
+    thumbnail: "https://github.com/Youngkwon-Lee.png"
     enabled: true
 
   - title: "LinkedIn"
-    url: "https://www.linkedin.com/in/martin-hong-sw/"
+    url: ""
     icon: "linkedin"
-    enabled: true
+    enabled: false
 
-  - title: "홈페이지"
-    url: "https://labs.baryon.ai/"
-    icon: "home"
-    enabled: true
+  - title: "YouTube"
+    url: ""
+    icon: "youtube"
+    enabled: false
 
-  - title: "HuggingFace"
-    url: "https://huggingface.co/baryonlabs"
-    icon: "huggingface"
-    thumbnail: "https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
-    enabled: true
+  - title: "Instagram"
+    url: ""
+    icon: "instagram"
+    enabled: false
 
-  - title: "GitHub"
-    url: "https://github.com/Baryon-ai"
-    icon: "github"
-    thumbnail: "https://github.com/Baryon-ai.png"
-    enabled: true
+  - title: "Threads"
+    url: ""
+    icon: "threads"
+    enabled: false
 
-  - title: "인프런"
-    url: "https://www.inflearn.com/users/44011/@baryonai"
-    icon: "inflearn"
-    enabled: true
-
-  - title: "챌린지: \"앱 커팅\"시대! 나를 위한 앱 만들고 공유하기"
-    url: "https://www.inflearn.com/challenge/quot%EC%95%B1-%EC%BB%A4%ED%8C%85quot%EC%8B%9C%EB%8C%80-%EB%82%98%EB%A5%BC-%EC%9C%84%ED%95%9C?cid=341120"
-    icon: "inflearn"
-    enabled: true
+  - title: "X"
+    url: ""
+    icon: "twitter"
+    enabled: false
