@@ -29,28 +29,24 @@ const t = {
   ...theme,
 };
 
-// ── 아이콘 맵 ────────────────────────────────────────────────────────────────
-const ICONS = {
-  instagram: '📸',
-  github: '🐙',
-  youtube: '▶️',
-  twitter: '𝕏',
-  x: '𝕏',
-  tiktok: '🎵',
-  linkedin: '💼',
-  facebook: 'f',
-  discord: '💬',
-  twitch: '🎮',
-  email: '📧',
-  blog: '📝',
-  link: '🔗',
-  carrot: '🥕',
-  huggingface: '🤗',
-  inflearn: '🎓',
-  home: '🏠',
+// ── 브랜드 아이콘 맵 (Simple Icons CDN) ──────────────────────────────────────
+const BRAND = {
+  instagram: { bg: 'linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)', cdn: 'instagram' },
+  github:    { bg: '#24292e', cdn: 'github' },
+  youtube:   { bg: '#FF0000', cdn: 'youtube' },
+  twitter:   { bg: '#000000', cdn: 'x' },
+  x:         { bg: '#000000', cdn: 'x' },
+  linkedin:  { bg: '#0A66C2', cdn: 'linkedin' },
+  threads:   { bg: '#000000', cdn: 'threads' },
+  tiktok:    { bg: '#000000', cdn: 'tiktok' },
+  discord:   { bg: '#5865F2', cdn: 'discord' },
+  facebook:  { bg: '#1877F2', cdn: 'facebook' },
+  twitch:    { bg: '#9146FF', cdn: 'twitch' },
 };
 
-const icon = (name) => ICONS[name?.toLowerCase()] ?? '🔗';
+// 이모지 폴백 (브랜드 맵에 없는 아이콘용)
+const EMOJI = { email: '📧', blog: '📝', link: '🔗', carrot: '🥕', huggingface: '🤗', inflearn: '🎓', home: '🏠' };
+const icon = (name) => EMOJI[name?.toLowerCase()] ?? '🔗';
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // ── HTML 조각 생성 ───────────────────────────────────────────────────────────
@@ -63,9 +59,12 @@ const bioHtml = profile.bio ? `<p class="bio">${esc(profile.bio)}</p>` : '';
 const linksHtml = links
   .filter((l) => l.enabled !== false)
   .map((l) => {
+    const brand = BRAND[l.icon?.toLowerCase()];
     const thumbHtml = l.thumbnail
       ? `<div class="link-thumb"><img src="${esc(l.thumbnail)}" alt="${esc(l.title)}" class="thumb-img"></div>`
-      : `<div class="link-thumb thumb-emoji"><span>${icon(l.icon)}</span></div>`;
+      : brand
+        ? `<div class="link-thumb" style="background:${brand.bg}"><img src="https://cdn.simpleicons.org/${brand.cdn}/ffffff" class="thumb-icon" alt="${esc(l.icon)}"></div>`
+        : `<div class="link-thumb thumb-emoji"><span>${icon(l.icon)}</span></div>`;
     return (
       `<a href="${esc(l.url)}" class="link-btn" target="_blank" rel="noopener noreferrer">` +
       thumbHtml +
@@ -163,6 +162,10 @@ const css = `
   .thumb-img {
     width: 100%; height: 100%;
     object-fit: cover;
+  }
+  .thumb-icon {
+    width: 28px; height: 28px;
+    object-fit: contain;
   }
   .thumb-emoji span {
     font-size: 2rem;
