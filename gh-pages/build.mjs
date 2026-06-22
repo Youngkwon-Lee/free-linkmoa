@@ -127,7 +127,7 @@ const navHtml = sections
   .join('\n        ');
 
 const sectionsHtml = sections
-  .map((section, index) => `<section class="section-panel${index === 0 ? ' is-active' : ''}" id="${esc(section.id)}" data-panel="${esc(section.id)}">
+  .map((section, index) => `<section class="section-panel reveal-block" id="${esc(section.id)}" data-panel="${esc(section.id)}" data-section-index="${String(index + 1).padStart(2, '0')}">
     <div class="section-heading">
       <span class="section-kicker">${String(index + 1).padStart(2, '0')} / ${esc(section.label)}</span>
       <h2>${esc(section.title)}</h2>
@@ -198,6 +198,50 @@ const css = `
     50% { transform: scale(1.05) rotate(18deg); opacity: 0.88; }
   }
   a { color: inherit; }
+  .scroll-hud {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 50;
+    display: grid;
+    gap: 8px;
+    justify-items: end;
+    pointer-events: none;
+  }
+  .scroll-hud strong {
+    color: var(--text);
+    font: 900 0.78rem/1 ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: 0.16em;
+  }
+  .scroll-track {
+    width: 1px;
+    height: 120px;
+    background: rgba(255,255,255,0.18);
+    position: relative;
+    overflow: hidden;
+  }
+  .scroll-track span {
+    position: absolute;
+    inset: 0 0 auto;
+    height: var(--scroll-progress, 0%);
+    background: var(--accent-2);
+    box-shadow: 0 0 22px rgba(241,194,125,0.42);
+  }
+  .section-rail {
+    position: fixed;
+    left: 22px;
+    top: 50%;
+    z-index: 30;
+    transform: translateY(-50%);
+    display: grid;
+    gap: 10px;
+    color: rgba(237,247,242,0.42);
+    font: 900 0.68rem/1 ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: 0.16em;
+    writing-mode: vertical-rl;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
   .page {
     width: min(1120px, calc(100% - 32px));
     margin: 0 auto;
@@ -400,6 +444,75 @@ const css = `
     overflow: hidden;
     transform-style: preserve-3d;
   }
+  .portrait-card {
+    position: relative;
+    min-height: 100%;
+    border-radius: 34px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    background:
+      linear-gradient(180deg, rgba(241,194,125,0.12), transparent 42%),
+      linear-gradient(180deg, rgba(20,36,31,0.95), rgba(11,18,16,0.95));
+    box-shadow: 0 24px 80px rgba(0,0,0,0.26);
+    isolation: isolate;
+  }
+  .portrait-card::before {
+    content: "";
+    position: absolute;
+    inset: 16px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 26px;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .portrait-card img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.78) contrast(1.08);
+    transform: scale(1.08);
+    opacity: 0.78;
+  }
+  .portrait-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(180deg, rgba(8,17,15,0.08), rgba(8,17,15,0.78) 72%),
+      radial-gradient(circle at 52% 34%, transparent 0 22%, rgba(8,17,15,0.34) 58%);
+  }
+  .portrait-copy {
+    position: relative;
+    z-index: 3;
+    min-height: 640px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 28px;
+  }
+  .portrait-copy .index {
+    position: absolute;
+    left: 28px;
+    top: 28px;
+    color: var(--accent-2);
+    font: 900 0.78rem/1 ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: 0.16em;
+  }
+  .portrait-copy h2 {
+    margin: 0;
+    font-size: clamp(2.2rem, 5vw, 4.8rem);
+    line-height: 0.86;
+    letter-spacing: -0.08em;
+  }
+  .portrait-copy p {
+    margin: 16px 0 0;
+    max-width: 330px;
+    color: rgba(237,247,242,0.76);
+    font: 0.95rem/1.65 ui-sans-serif, system-ui, sans-serif;
+  }
   .signal-panel::before {
     content: "";
     position: absolute;
@@ -588,12 +701,17 @@ const css = `
     background: var(--accent-2);
   }
   .section-panel {
-    display: none;
-    padding-top: 10px;
-  }
-  .section-panel.is-active {
     display: block;
-    animation: lift 0.36s ease both;
+    padding: clamp(34px, 7vw, 86px) 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 560ms ease, transform 560ms ease;
+    scroll-margin-top: 92px;
+  }
+  .section-panel.is-visible {
+    opacity: 1;
+    transform: translateY(0);
   }
   @keyframes lift {
     from { opacity: 0; transform: translateY(12px); }
@@ -751,6 +869,7 @@ const css = `
     .topbar { margin-bottom: 28px; }
     .section-heading { grid-template-columns: 1fr; }
     .section-heading h2, .section-heading p { grid-column: auto; }
+    .portrait-copy { min-height: 520px; }
     .living-orbit { min-height: 500px; }
     .orbit-node { width: min(260px, 72vw); }
     .node-1 { left: 6%; top: 8%; }
@@ -768,6 +887,7 @@ const css = `
     .tab { flex: 1 0 auto; }
     .card { min-height: 220px; }
     .status-pill { display: none; }
+    .scroll-hud, .section-rail { display: none; }
     .living-orbit { min-height: 560px; }
     .orbit-core { width: 220px; height: 220px; }
     h1 { font-size: clamp(4rem, 20vw, 6rem); }
@@ -794,6 +914,11 @@ const html = `<!DOCTYPE html>
   <style>${css}</style>
 </head>
 <body>
+  <div class="scroll-hud" aria-hidden="true">
+    <strong id="scroll-percent">00 / 100</strong>
+    <div class="scroll-track"><span></span></div>
+  </div>
+  <div class="section-rail" id="section-rail">00 / Intro</div>
   <main class="page">
     <header class="topbar">
       <div class="identity">
@@ -823,14 +948,12 @@ const html = `<!DOCTYPE html>
           ${hero.secondary?.target ? `<a class="button secondary" href="#${esc(hero.secondary.target)}" data-jump-tab="${esc(hero.secondary.target)}">${esc(hero.secondary.label || 'Explore')}</a>` : ''}
         </div>
       </div>
-      <aside class="signal-panel" aria-label="Kinelo summary">
-        <div>
+      <aside class="portrait-card" aria-label="Youngkwon Lee portrait">
+        ${profile.avatar ? `<img src="${esc(profile.avatar)}" alt="${esc(profile.name)} portrait">` : ''}
+        <div class="portrait-copy">
+          <span class="index">00 / INTRO</span>
           <h2>Movement data, made clinically useful.</h2>
-          <div class="signal-list">
-            <div class="signal"><span>Core product</span><strong>physio_app</strong></div>
-            <div class="signal"><span>Assessment demos</span><strong>Face · Finger · Motion</strong></div>
-            <div class="signal"><span>Research tracks</span><strong>Clinical AI · Digital Twin</strong></div>
-          </div>
+          <p>Physical therapy background, clinical reasoning, and AI-native product building in one operating system.</p>
         </div>
       </aside>
     </section>
@@ -863,21 +986,49 @@ const html = `<!DOCTYPE html>
   <script>
     const tabs = [...document.querySelectorAll('[data-tab]')];
     const panels = [...document.querySelectorAll('[data-panel]')];
-    const activate = (id) => {
+    const scrollPercent = document.getElementById('scroll-percent');
+    const sectionRail = document.getElementById('section-rail');
+    const activate = (id, shouldScroll = false) => {
       tabs.forEach((tab) => tab.classList.toggle('is-active', tab.dataset.tab === id));
-      panels.forEach((panel) => panel.classList.toggle('is-active', panel.dataset.panel === id));
-      history.replaceState(null, '', '#' + id);
+      const panel = panels.find((item) => item.dataset.panel === id);
+      if (panel && sectionRail) {
+        const label = tabs.find((tab) => tab.dataset.tab === id)?.textContent || id;
+        sectionRail.textContent = (panel.dataset.sectionIndex || '00') + ' / ' + label;
+      }
+      if (panel && shouldScroll) {
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', '#' + id);
+      }
     };
-    tabs.forEach((tab) => tab.addEventListener('click', () => activate(tab.dataset.tab)));
+    tabs.forEach((tab) => tab.addEventListener('click', () => activate(tab.dataset.tab, true)));
     document.querySelectorAll('[data-jump-tab]').forEach((link) => {
       link.addEventListener('click', (event) => {
         event.preventDefault();
-        activate(link.dataset.jumpTab);
-        document.querySelector('.tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        activate(link.dataset.jumpTab, true);
       });
     });
     const initial = location.hash.replace('#', '');
-    if (initial && panels.some((panel) => panel.dataset.panel === initial)) activate(initial);
+    if (initial && panels.some((panel) => panel.dataset.panel === initial)) activate(initial, true);
+
+    const updateProgress = () => {
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const percent = Math.max(0, Math.min(100, Math.round((window.scrollY / max) * 100)));
+      document.documentElement.style.setProperty('--scroll-progress', percent + '%');
+      if (scrollPercent) scrollPercent.textContent = String(percent).padStart(2, '0') + ' / 100';
+    };
+    updateProgress();
+    window.addEventListener('scroll', updateProgress, { passive: true });
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          activate(entry.target.dataset.panel);
+        }
+      });
+    }, { rootMargin: '-28% 0px -52% 0px', threshold: 0.01 });
+    panels.forEach((panel) => sectionObserver.observe(panel));
+    panels[0]?.classList.add('is-visible');
 
     const hero = document.querySelector('.hero-copy');
     hero?.addEventListener('pointermove', (event) => {
