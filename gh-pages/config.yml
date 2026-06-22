@@ -1,5 +1,5 @@
 profile:
-  name: "Kinelo"
+  name: "Youngkwon Lee"
   eyebrow: "Clinical AI Lab by Youngkwon Lee"
   bio: "Physical therapy, clinical reasoning, and multimodal AI systems for human movement assessment."
   avatar: "https://github.com/Youngkwon-Lee.png"
@@ -15,11 +15,11 @@ theme:
   accent_2: "#f1c27d"
 
 hero:
-  title: "Kinelo"
-  subtitle: "Clinical AI for movement, rehabilitation, and therapist-grade assessment."
-  description: "Kinelo is the public home for Youngkwon Lee's clinical AI work: physio_app, facial muscle analysis, finger tapping assessment, movement experiments, and research notes."
+  title: "Youngkwon Lee."
+  subtitle: "Clinical AI builder for movement, rehabilitation, and therapist-grade assessment."
+  description: "I build Kinelo: a clinical AI lab connecting physical therapy, movement assessment, multimodal reasoning, and agent-operated product systems."
   primary:
-    label: "Open physio_app"
+    label: "Open Kinelo"
     url: "https://physio-app-steel.vercel.app"
   secondary:
     label: "View projects"
