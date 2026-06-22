@@ -458,8 +458,7 @@ const html = String.raw`<!DOCTYPE html>
 
   <nav class="dock" aria-label="Kinelo shortcuts">
     <button id="open-portfolio" type="button">Portfolio</button>
-    ${hero.primary?.url ? `<a href="${esc(hero.primary.url)}" target="_blank" rel="noopener noreferrer">Kinelo</a>` : ''}
-    ${projects.slice(1, 4).map(linkButton).join('')}
+    <button id="open-selected" type="button">Open selected</button>
   </nav>
 
   <div id="welcome" class="welcome">
@@ -537,32 +536,101 @@ const html = String.raw`<!DOCTYPE html>
     const closePopupButton = document.getElementById('popup-exit-button');
     const closeWelcomeButton = document.getElementById('welcome-exit-button');
     const objectStatus = document.getElementById('object-status');
+    const openSelected = document.getElementById('open-selected');
+
+    const monitorEntries = {
+      home: {
+        eyebrow: 'KINELO LAB',
+        title: 'SELECT A ROOM OBJECT',
+        body: 'Click the computer, portfolio sign, GitHub icon, book, mug, or backpack. The selected project appears on this monitor.',
+        url: 'https://youngkwon-lee.github.io/free-linkmoa/',
+      },
+      portfolio: {
+        eyebrow: 'PROFILE',
+        title: 'YOUNGKWON LEE',
+        body: 'Clinical AI builder connecting physical therapy, movement assessment, multimodal reasoning, and agent-operated product systems.',
+        url: 'https://youngkwon-lee.github.io/free-linkmoa/',
+      },
+      physio: {
+        eyebrow: 'MAIN PRODUCT',
+        title: 'PHYSIO_APP',
+        body: 'Kinelo main surface: clinical reasoning workspace and rehabilitation data platform.',
+        url: 'https://physio-app-steel.vercel.app',
+      },
+      face: {
+        eyebrow: 'DEMO',
+        title: 'FACE FITNESS',
+        body: 'Real-time facial muscle activation and symmetry assessment demo.',
+        url: 'https://face-fitness.vercel.app',
+      },
+      github: {
+        eyebrow: 'CODE',
+        title: 'GITHUB',
+        body: 'Public repositories for Kinelo, clinical AI experiments, research tools, and operating systems.',
+        url: 'https://github.com/Youngkwon-Lee',
+      },
+      x: {
+        eyebrow: 'SNS',
+        title: 'X / BUILD NOTES',
+        body: 'Product, AI, and clinical movement assessment notes.',
+        url: 'https://x.com/Yoonjun_dev',
+      },
+      hawkeye: {
+        eyebrow: 'RESEARCH',
+        title: 'HAWKEYE',
+        body: 'Parkinson video assessment research shell for motor task scoring and clinician-facing objective evaluation.',
+        url: 'https://github.com/Youngkwon-Lee/Hawkeye_paper',
+      },
+      chair: {
+        eyebrow: 'INTERACTION',
+        title: 'CHAIR SPIN',
+        body: 'This object is a room interaction. Use the room like a small operating dashboard.',
+        url: 'https://youngkwon-lee.github.io/free-linkmoa/',
+      },
+    };
+
+    let currentMonitorEntry = monitorEntries.home;
+    let monitorTexture;
+    let monitorCanvas;
+    let monitorContext;
+    let liveMonitorPlane;
+
+    const showOnMonitor = (key) => {
+      currentMonitorEntry = monitorEntries[key] || monitorEntries.home;
+      drawMonitorScreen(currentMonitorEntry);
+      focusMonitor();
+      if (objectStatus) objectStatus.textContent = currentMonitorEntry.title + ' shown on computer';
+    };
 
     const objectActions = {
-      Portfolio: () => popup.classList.toggle('hidden'),
-      Table: () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
-      ComputerHotspot: () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
-      'PC Screen': () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
-      Mousepad: () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
-      Keyboard: () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
-      Mouse: () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
-      'PC Tower': () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
-      Github: () => window.open('https://github.com/Youngkwon-Lee', '_blank', 'noopener,noreferrer'),
-      TwitterX: () => window.open('https://x.com/Yoonjun_dev', '_blank', 'noopener,noreferrer'),
-      Book: () => window.open('https://github.com/Youngkwon-Lee/Hawkeye_paper', '_blank', 'noopener,noreferrer'),
-      Backpack: () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
-      Mug: () => window.open('https://face-fitness.vercel.app', '_blank', 'noopener,noreferrer'),
-      Name: () => popup.classList.toggle('hidden'),
+      Portfolio: () => showOnMonitor('portfolio'),
+      Table: () => showOnMonitor('physio'),
+      ComputerHotspot: () => showOnMonitor('physio'),
+      PC_Screen: () => showOnMonitor('physio'),
+      'PC Screen': () => showOnMonitor('physio'),
+      Mousepad: () => showOnMonitor('physio'),
+      Keyboard: () => showOnMonitor('physio'),
+      Mouse: () => showOnMonitor('physio'),
+      PC_Tower: () => showOnMonitor('physio'),
+      'PC Tower': () => showOnMonitor('physio'),
+      Github: () => showOnMonitor('github'),
+      TwitterX: () => showOnMonitor('x'),
+      Book: () => showOnMonitor('hawkeye'),
+      Backpack: () => showOnMonitor('physio'),
+      Mug: () => showOnMonitor('face'),
+      Name: () => showOnMonitor('portfolio'),
     };
 
     const objectLabels = {
       Portfolio: 'Portfolio panel',
       Table: 'Computer desk -> physio_app',
       ComputerHotspot: 'Computer -> physio_app',
+      PC_Screen: 'Computer -> physio_app',
       'PC Screen': 'Computer -> physio_app',
       Mousepad: 'Mousepad -> physio_app',
       Keyboard: 'Keyboard -> physio_app',
       Mouse: 'Mouse -> physio_app',
+      PC_Tower: 'PC tower -> physio_app',
       'PC Tower': 'PC tower -> physio_app',
       Github: 'GitHub -> Youngkwon-Lee',
       TwitterX: 'X -> Yoonjun_dev',
@@ -637,8 +705,118 @@ const html = String.raw`<!DOCTYPE html>
       scene.add(fill);
     }
 
+    function wrapText(text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      let cursorY = y;
+      for (let index = 0; index < words.length; index += 1) {
+        const testLine = line + words[index] + ' ';
+        if (monitorContext.measureText(testLine).width > maxWidth && index > 0) {
+          monitorContext.fillText(line.trim(), x, cursorY);
+          line = words[index] + ' ';
+          cursorY += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      monitorContext.fillText(line.trim(), x, cursorY);
+      return cursorY + lineHeight;
+    }
+
+    function drawMonitorScreen(entry = monitorEntries.home) {
+      if (!monitorContext || !monitorTexture) return;
+
+      monitorContext.fillStyle = '#08091a';
+      monitorContext.fillRect(0, 0, monitorCanvas.width, monitorCanvas.height);
+
+      const gradient = monitorContext.createLinearGradient(0, 0, monitorCanvas.width, monitorCanvas.height);
+      gradient.addColorStop(0, 'rgba(82, 92, 235, 0.46)');
+      gradient.addColorStop(0.52, 'rgba(8, 9, 26, 0.12)');
+      gradient.addColorStop(1, 'rgba(128, 216, 183, 0.24)');
+      monitorContext.fillStyle = gradient;
+      monitorContext.fillRect(0, 0, monitorCanvas.width, monitorCanvas.height);
+
+      monitorContext.strokeStyle = '#525ceb';
+      monitorContext.lineWidth = 18;
+      monitorContext.strokeRect(22, 22, monitorCanvas.width - 44, monitorCanvas.height - 44);
+
+      monitorContext.fillStyle = '#80d8b7';
+      monitorContext.font = '700 38px Montserrat, sans-serif';
+      monitorContext.fillText(entry.eyebrow, 64, 92);
+
+      monitorContext.fillStyle = '#f8edff';
+      monitorContext.font = '900 82px Montserrat, sans-serif';
+      const titleLines = entry.title.split(' ');
+      if (titleLines.length > 1 && entry.title.length > 13) {
+        monitorContext.fillText(titleLines.slice(0, -1).join(' '), 64, 190);
+        monitorContext.fillText(titleLines.slice(-1).join(' '), 64, 282);
+      } else {
+        monitorContext.fillText(entry.title, 64, 210);
+      }
+
+      monitorContext.fillStyle = 'rgba(248, 237, 255, 0.78)';
+      monitorContext.font = '700 32px Montserrat, sans-serif';
+      const bodyStart = entry.title.length > 13 ? 350 : 300;
+      const nextY = wrapText(entry.body, 64, bodyStart, 880, 48);
+
+      monitorContext.fillStyle = '#525ceb';
+      monitorContext.fillRect(64, Math.min(nextY + 28, 500), 340, 58);
+      monitorContext.fillStyle = '#f8edff';
+      monitorContext.font = '900 30px Montserrat, sans-serif';
+      monitorContext.fillText('OPEN SELECTED', 92, Math.min(nextY + 68, 540));
+
+      monitorContext.fillStyle = 'rgba(248, 237, 255, 0.48)';
+      monitorContext.font = '700 22px Montserrat, sans-serif';
+      monitorContext.fillText('Click another object to change this monitor.', 64, 650);
+
+      monitorTexture.needsUpdate = true;
+    }
+
+    function setupComputerMonitor(model, anchor) {
+      const screen = model.getObjectByName('PC_Screen') || model.getObjectByName('PC Screen') || anchor;
+      if (!screen) return;
+
+      monitorCanvas = document.createElement('canvas');
+      monitorCanvas.width = 1024;
+      monitorCanvas.height = 720;
+      monitorContext = monitorCanvas.getContext('2d');
+      monitorTexture = new THREE.CanvasTexture(monitorCanvas);
+      monitorTexture.colorSpace = THREE.SRGBColorSpace;
+      monitorTexture.flipY = true;
+
+      const monitorPlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.28, 1.34),
+        new THREE.MeshBasicMaterial({
+          map: monitorTexture,
+          toneMapped: false,
+          side: THREE.DoubleSide,
+          depthTest: false,
+        }),
+      );
+      const center = new THREE.Vector3();
+      screen.getWorldPosition(center);
+      monitorPlane.name = 'LiveMonitorScreen';
+      monitorPlane.position.copy(center);
+      monitorPlane.position.y += 0.86;
+      monitorPlane.position.z += 0.18;
+      monitorPlane.renderOrder = 10;
+      monitorPlane.lookAt(camera.position);
+      model.add(monitorPlane);
+      liveMonitorPlane = monitorPlane;
+
+      if (screen.isMesh) {
+        screen.material = new THREE.MeshBasicMaterial({
+          map: monitorTexture,
+          toneMapped: false,
+          side: THREE.DoubleSide,
+          depthTest: false,
+        });
+      }
+      drawMonitorScreen(monitorEntries.home);
+    }
+
     function addComputerHotspot(model) {
-      const parts = ['PC Screen', 'Keyboard', 'Mouse', 'Mousepad', 'PC Tower']
+      const parts = ['PC_Screen', 'PC Screen', 'Keyboard', 'Mouse', 'Mousepad', 'PC_Tower', 'PC Tower']
         .map((name) => model.getObjectByName(name))
         .filter(Boolean);
       if (!parts.length) return;
@@ -661,6 +839,7 @@ const html = String.raw`<!DOCTYPE html>
       hotspot.position.copy(center);
       model.add(hotspot);
       intersectObjects.push(hotspot);
+      return hotspot;
     }
 
     function resize() {
@@ -694,6 +873,12 @@ const html = String.raw`<!DOCTYPE html>
         if (t < 1) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
+    }
+
+    function focusMonitor() {
+      controls.target.set(-3.28, 4.06, -1.78);
+      camera.position.set(6.35, 5.28, 2.45);
+      controls.update();
     }
 
     function resolveInteractable(object) {
@@ -754,9 +939,19 @@ const html = String.raw`<!DOCTYPE html>
             child.receiveShadow = true;
           }
         });
-        addComputerHotspot(glb.scene);
+        const computerHotspot = addComputerHotspot(glb.scene);
+        setupComputerMonitor(glb.scene, computerHotspot);
         scene.add(glb.scene);
-        window.KINELO_ROOM = { scene, camera, controls, intersectObjects };
+        window.KINELO_ROOM = {
+          scene,
+          camera,
+          controls,
+          intersectObjects,
+          showOnMonitor,
+          get currentMonitorEntry() {
+            return currentMonitorEntry;
+          },
+        };
         setupLights();
         loading.classList.add('hidden');
       },
@@ -769,6 +964,11 @@ const html = String.raw`<!DOCTYPE html>
     );
 
     openPortfolio.addEventListener('click', () => popup.classList.toggle('hidden'));
+    openSelected.addEventListener('click', () => {
+      if (currentMonitorEntry?.url) {
+        window.open(currentMonitorEntry.url, '_blank', 'noopener,noreferrer');
+      }
+    });
     brandOpen.addEventListener('click', () => welcome.classList.toggle('hidden'));
     closePopupButton.addEventListener('click', () => popup.classList.add('hidden'));
     closeWelcomeButton.addEventListener('click', () => welcome.classList.add('hidden'));
@@ -777,6 +977,7 @@ const html = String.raw`<!DOCTYPE html>
     window.addEventListener('resize', resize);
 
     function animate() {
+      if (liveMonitorPlane) liveMonitorPlane.lookAt(camera.position);
       controls.update();
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
