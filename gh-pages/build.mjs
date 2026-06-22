@@ -1022,35 +1022,50 @@ const html = String.raw`<!DOCTYPE html>
       if (!monitorContext || !monitorTexture) return;
 
       monitorClickZones = [];
-      monitorContext.fillStyle = '#08091a';
+
+      const roundRect = (x, y, width, height, radius = 18) => {
+        monitorContext.beginPath();
+        monitorContext.moveTo(x + radius, y);
+        monitorContext.lineTo(x + width - radius, y);
+        monitorContext.quadraticCurveTo(x + width, y, x + width, y + radius);
+        monitorContext.lineTo(x + width, y + height - radius);
+        monitorContext.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        monitorContext.lineTo(x + radius, y + height);
+        monitorContext.quadraticCurveTo(x, y + height, x, y + height - radius);
+        monitorContext.lineTo(x, y + radius);
+        monitorContext.quadraticCurveTo(x, y, x + radius, y);
+        monitorContext.closePath();
+      };
+
+      const desktopGradient = monitorContext.createLinearGradient(0, 0, monitorCanvas.width, monitorCanvas.height);
+      desktopGradient.addColorStop(0, '#fbf0ff');
+      desktopGradient.addColorStop(0.42, '#b7c6ff');
+      desktopGradient.addColorStop(1, '#111a63');
+      monitorContext.fillStyle = desktopGradient;
       monitorContext.fillRect(0, 0, monitorCanvas.width, monitorCanvas.height);
 
-      const gradient = monitorContext.createLinearGradient(0, 0, monitorCanvas.width, monitorCanvas.height);
-      gradient.addColorStop(0, 'rgba(82, 92, 235, 0.46)');
-      gradient.addColorStop(0.52, 'rgba(8, 9, 26, 0.12)');
-      gradient.addColorStop(1, 'rgba(128, 216, 183, 0.24)');
-      monitorContext.fillStyle = gradient;
-      monitorContext.fillRect(0, 0, monitorCanvas.width, monitorCanvas.height);
-
-      monitorContext.fillStyle = 'rgba(248, 237, 255, 0.08)';
-      for (let x = 0; x < monitorCanvas.width; x += 32) {
-        monitorContext.fillRect(x, 0, 1, monitorCanvas.height);
+      monitorContext.fillStyle = 'rgba(255, 255, 255, 0.12)';
+      for (let x = -80; x < monitorCanvas.width; x += 48) {
+        monitorContext.fillRect(x, 0, 2, monitorCanvas.height);
       }
-      for (let y = 0; y < monitorCanvas.height; y += 32) {
-        monitorContext.fillRect(0, y, monitorCanvas.width, 1);
+      for (let y = 0; y < monitorCanvas.height; y += 48) {
+        monitorContext.fillRect(0, y, monitorCanvas.width, 2);
       }
 
-      monitorContext.strokeStyle = '#525ceb';
-      monitorContext.lineWidth = 18;
-      monitorContext.strokeRect(22, 22, monitorCanvas.width - 44, monitorCanvas.height - 44);
+      monitorContext.fillStyle = 'rgba(248, 237, 255, 0.82)';
+      roundRect(18, 16, monitorCanvas.width - 36, 42, 16);
+      monitorContext.fill();
+      monitorContext.fillStyle = '#272538';
+      monitorContext.font = '900 20px Montserrat, sans-serif';
+      monitorContext.fillText('KINELO OS', 42, 44);
+      monitorContext.font = '700 18px Montserrat, sans-serif';
+      monitorContext.fillText('Finder', 176, 44);
+      monitorContext.fillText('Projects', 260, 44);
+      monitorContext.fillText('Research', 370, 44);
+      monitorContext.fillStyle = 'rgba(39, 37, 56, 0.62)';
+      monitorContext.fillText('Desktop workspace inside the monitor', 622, 44);
 
-      monitorContext.fillStyle = 'rgba(248, 237, 255, 0.92)';
-      monitorContext.fillRect(34, 34, 270, monitorCanvas.height - 68);
-      monitorContext.strokeStyle = '#525ceb';
-      monitorContext.lineWidth = 8;
-      monitorContext.strokeRect(34, 34, 270, monitorCanvas.height - 68);
-
-      const menuItems = [
+      const desktopItems = [
         ['physio', 'physio_app'],
         ['face', 'Face Fitness'],
         ['finger', 'Finger Tap'],
@@ -1062,58 +1077,104 @@ const html = String.raw`<!DOCTYPE html>
         ['coffee', 'Coffee'],
         ['portfolio', 'Profile'],
       ];
-      monitorContext.font = '900 22px Montserrat, sans-serif';
-      menuItems.forEach(([key, label], index) => {
-        const x = 58;
-        const y = 62 + index * 58;
-        const w = 220;
-        const h = 42;
+
+      const drawFolder = (key, label, index) => {
+        const column = index % 5;
+        const row = Math.floor(index / 5);
+        const x = 62 + column * 176;
+        const y = 92 + row * 128;
         const active = key === activeMonitorKey;
-        monitorContext.fillStyle = active ? '#525ceb' : '#ffffff';
-        monitorContext.fillRect(x, y, w, h);
+
+        if (active) {
+          monitorContext.fillStyle = 'rgba(82, 92, 235, 0.22)';
+          roundRect(x - 14, y - 12, 126, 104, 18);
+          monitorContext.fill();
+        }
+
+        monitorContext.fillStyle = active ? '#525ceb' : '#f8edff';
+        roundRect(x, y + 18, 82, 54, 10);
+        monitorContext.fill();
+        monitorContext.fillStyle = active ? '#80d8b7' : '#d8dcff';
+        roundRect(x + 5, y + 6, 36, 22, 8);
+        monitorContext.fill();
         monitorContext.strokeStyle = '#525ceb';
         monitorContext.lineWidth = 4;
-        monitorContext.strokeRect(x, y, w, h);
-        monitorContext.fillStyle = active ? '#f8edff' : '#525ceb';
-        monitorContext.fillText(label, x + 14, y + 29);
-        monitorClickZones.push({ key, x, y, w, h, type: 'select' });
+        roundRect(x, y + 18, 82, 54, 10);
+        monitorContext.stroke();
+
+        monitorContext.fillStyle = active ? '#f8edff' : '#272538';
+        monitorContext.font = '900 18px Montserrat, sans-serif';
+        monitorContext.fillText(label, x - 4, y + 102);
+        monitorClickZones.push({ key, x: x - 18, y: y - 12, w: 136, h: 124, type: 'select' });
+      };
+
+      desktopItems.forEach(([key, label], index) => drawFolder(key, label, index));
+
+      const windowX = 160;
+      const windowY = 330;
+      const windowW = 704;
+      const windowH = 282;
+      monitorContext.fillStyle = 'rgba(8, 9, 26, 0.34)';
+      roundRect(windowX + 12, windowY + 16, windowW, windowH, 24);
+      monitorContext.fill();
+      monitorContext.fillStyle = 'rgba(248, 237, 255, 0.96)';
+      roundRect(windowX, windowY, windowW, windowH, 24);
+      monitorContext.fill();
+      monitorContext.strokeStyle = '#525ceb';
+      monitorContext.lineWidth = 6;
+      roundRect(windowX, windowY, windowW, windowH, 24);
+      monitorContext.stroke();
+
+      monitorContext.fillStyle = '#f1e6ff';
+      roundRect(windowX + 6, windowY + 6, windowW - 12, 48, 20);
+      monitorContext.fill();
+      [['#ff6b6b', 192], ['#ffd166', 224], ['#80d8b7', 256]].forEach(([color, cx]) => {
+        monitorContext.fillStyle = color;
+        monitorContext.beginPath();
+        monitorContext.arc(cx, windowY + 30, 10, 0, Math.PI * 2);
+        monitorContext.fill();
       });
-
-      const contentX = 350;
-
-      monitorContext.fillStyle = '#80d8b7';
-      monitorContext.font = '700 38px Montserrat, sans-serif';
-      monitorContext.fillText(entry.eyebrow, contentX, 100);
-
-      monitorContext.fillStyle = '#f8edff';
-      monitorContext.font = '900 76px Montserrat, sans-serif';
-      const titleLines = entry.title.split(' ');
-      if (titleLines.length > 1 && entry.title.length > 13) {
-        monitorContext.fillText(titleLines.slice(0, -1).join(' '), contentX, 190);
-        monitorContext.fillText(titleLines.slice(-1).join(' '), contentX, 274);
-      } else {
-        monitorContext.fillText(entry.title, contentX, 210);
-      }
-
-      monitorContext.fillStyle = 'rgba(248, 237, 255, 0.78)';
-      monitorContext.font = '700 32px Montserrat, sans-serif';
-      const bodyStart = entry.title.length > 13 ? 350 : 300;
-      const nextY = wrapText(entry.body, contentX, bodyStart, 600, 48);
+      monitorContext.fillStyle = '#272538';
+      monitorContext.font = '900 20px Montserrat, sans-serif';
+      monitorContext.fillText(entry.title, windowX + 134, windowY + 38);
 
       monitorContext.fillStyle = '#525ceb';
-      const buttonY = Math.min(nextY + 28, 520);
-      monitorContext.fillRect(contentX, buttonY, 320, 58);
-      monitorContext.fillRect(contentX + 350, buttonY, 190, 58);
-      monitorContext.fillStyle = '#f8edff';
-      monitorContext.font = '900 30px Montserrat, sans-serif';
-      monitorContext.fillText('OPEN SELECTED', contentX + 28, buttonY + 40);
-      monitorContext.fillText('VIEW ROOM', contentX + 378, buttonY + 40);
-      monitorClickZones.push({ key: activeMonitorKey, x: contentX, y: buttonY, w: 320, h: 58, type: 'open' });
-      monitorClickZones.push({ key: 'home', x: contentX + 350, y: buttonY, w: 190, h: 58, type: 'scene' });
+      monitorContext.font = '900 28px Montserrat, sans-serif';
+      monitorContext.fillText(entry.eyebrow, windowX + 38, windowY + 98);
+      monitorContext.fillStyle = '#272538';
+      monitorContext.font = '900 52px Montserrat, sans-serif';
+      monitorContext.fillText(entry.title, windowX + 38, windowY + 158);
+      monitorContext.fillStyle = 'rgba(39, 37, 56, 0.74)';
+      monitorContext.font = '700 24px Montserrat, sans-serif';
+      const nextY = wrapText(entry.body, windowX + 38, windowY + 206, windowW - 76, 34);
 
-      monitorContext.fillStyle = 'rgba(248, 237, 255, 0.48)';
-      monitorContext.font = '700 22px Montserrat, sans-serif';
-      monitorContext.fillText('Select folders on this computer screen.', contentX, 650);
+      const buttonY = Math.min(nextY + 16, windowY + windowH - 60);
+      monitorContext.fillStyle = '#525ceb';
+      roundRect(windowX + 38, buttonY, 248, 46, 12);
+      monitorContext.fill();
+      roundRect(windowX + 308, buttonY, 178, 46, 12);
+      monitorContext.fill();
+      monitorContext.fillStyle = '#f8edff';
+      monitorContext.font = '900 22px Montserrat, sans-serif';
+      monitorContext.fillText('OPEN SELECTED', windowX + 62, buttonY + 31);
+      monitorContext.fillText('VIEW ROOM', windowX + 336, buttonY + 31);
+      monitorClickZones.push({ key: activeMonitorKey, x: windowX + 38, y: buttonY, w: 248, h: 46, type: 'open' });
+      monitorClickZones.push({ key: 'home', x: windowX + 308, y: buttonY, w: 178, h: 46, type: 'scene' });
+
+      monitorContext.fillStyle = 'rgba(248, 237, 255, 0.78)';
+      roundRect(264, 638, 496, 52, 26);
+      monitorContext.fill();
+      ['physio', 'face', 'hawkeye', 'mission', 'secondbrain', 'github'].forEach((key, index) => {
+        const cx = 302 + index * 78;
+        monitorContext.fillStyle = key === activeMonitorKey ? '#525ceb' : '#f8edff';
+        monitorContext.beginPath();
+        monitorContext.arc(cx, 664, 19, 0, Math.PI * 2);
+        monitorContext.fill();
+        monitorContext.strokeStyle = '#525ceb';
+        monitorContext.lineWidth = 4;
+        monitorContext.stroke();
+        monitorClickZones.push({ key, x: cx - 24, y: 640, w: 48, h: 48, type: 'select' });
+      });
 
       monitorTexture.needsUpdate = true;
     }
