@@ -165,6 +165,18 @@ const html = String.raw`<!DOCTYPE html>
       pointer-events: none;
     }
 
+    body.monitor-focused .top-hud,
+    body.monitor-focused .dock {
+      opacity: 0;
+      transform: translateY(-18px);
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    body.monitor-focused .dock {
+      transform: translate(-50%, 18px);
+    }
+
     .brand-chip,
     .hint-chip {
       display: flex;
@@ -778,6 +790,54 @@ const html = String.raw`<!DOCTYPE html>
         body: 'Parkinson video assessment research shell for motor task scoring and clinician-facing objective evaluation.',
         url: 'https://github.com/Youngkwon-Lee/Hawkeye_paper',
       },
+      finger: {
+        eyebrow: 'MOTOR DEMO',
+        title: 'FINGER TAP FX',
+        body: 'Finger tapping speed, rhythm, fatigue, and asymmetry demo for motor assessment experiments.',
+        url: 'https://finger-tap-fx.vercel.app',
+      },
+      coffee: {
+        eyebrow: 'SIDE PROJECT',
+        title: 'COFFEE',
+        body: 'Small deployed experiment surface for product pacing, launch tests, and lightweight web UI iteration.',
+        url: 'https://coffee-omega-lovat.vercel.app',
+      },
+      rayban: {
+        eyebrow: 'WEARABLE AI',
+        title: 'RAY-BAN PT',
+        body: 'Meta/Ray-Ban physical therapy assistant experiments and wearable clinical AI interface notes.',
+        url: 'https://github.com/Youngkwon-Lee/rayban_pt',
+      },
+      mission: {
+        eyebrow: 'OPS',
+        title: 'MISSION CONTROL',
+        body: 'Agent and product operating dashboard for physio_app, Hermes Desktop, deployed tools, and active workstreams.',
+        url: 'http://127.0.0.1:3000/mission-control',
+      },
+      hermes: {
+        eyebrow: 'AGENT OS',
+        title: 'HERMES OS',
+        body: 'Cross-device agent operation layer connecting Codex, desktop automation, Discord Hermes, and project execution.',
+        url: 'http://127.0.0.1:3000/mission-control',
+      },
+      secondbrain: {
+        eyebrow: 'KNOWLEDGE',
+        title: 'SECOND BRAIN',
+        body: 'Research notes, paper logs, canonical references, project memories, and Notion knowledge systems.',
+        url: 'https://youngkwon-lee.github.io/free-linkmoa/',
+      },
+      visualprm: {
+        eyebrow: 'RESEARCH',
+        title: 'VISUAL PRM',
+        body: 'Visual reasoning, process reward modeling, and multimodal evaluation research track.',
+        url: 'https://github.com/Youngkwon-Lee',
+      },
+      archive: {
+        eyebrow: 'SYSTEM',
+        title: 'ARCHIVE',
+        body: 'Parking lot for older experiments, references, shipped links, and dormant project materials.',
+        url: 'https://youngkwon-lee.github.io/free-linkmoa/',
+      },
       chair: {
         eyebrow: 'INTERACTION',
         title: 'CHAIR SPIN',
@@ -793,6 +853,7 @@ const html = String.raw`<!DOCTYPE html>
     let liveMonitorPlane;
     let activeMonitorKey = 'home';
     let monitorClickZones = [];
+    const monitorCameraOffset = new THREE.Vector3(9.63, 1.22, 4.23).normalize().multiplyScalar(4.4);
 
     const showOnMonitor = (key) => {
       activeMonitorKey = key;
@@ -820,6 +881,23 @@ const html = String.raw`<!DOCTYPE html>
       Backpack: () => showOnMonitor('physio'),
       Mug: () => showOnMonitor('face'),
       Name: () => showOnMonitor('portfolio'),
+      Poster: () => showOnMonitor('portfolio'),
+      Drawer: () => showOnMonitor('archive'),
+      'Drawer.020': () => showOnMonitor('archive'),
+      'Drawer.021': () => showOnMonitor('archive'),
+      'Drawer.022': () => showOnMonitor('archive'),
+      Trash: () => showOnMonitor('archive'),
+      Window: () => showOnMonitor('x'),
+      Bookshelf: () => showOnMonitor('secondbrain'),
+      Cactus: () => showOnMonitor('secondbrain'),
+      'Rubix Cube': () => showOnMonitor('mission'),
+      Skateboard: () => showOnMonitor('finger'),
+      Mat: () => showOnMonitor('rayban'),
+      Can1: () => showOnMonitor('coffee'),
+      Can2: () => showOnMonitor('coffee'),
+      Can3: () => showOnMonitor('coffee'),
+      Pokeball: () => showOnMonitor('visualprm'),
+      Chair: () => showOnMonitor('hermes'),
     };
 
     const objectLabels = {
@@ -839,7 +917,23 @@ const html = String.raw`<!DOCTYPE html>
       Backpack: 'Backpack -> Kinelo',
       Mug: 'Mug -> Face Fitness',
       Name: 'Name plate -> Portfolio',
-      Chair: 'Chair -> spin',
+      Poster: 'Poster -> Profile',
+      Drawer: 'Drawer -> Archive',
+      'Drawer.020': 'Drawer -> Archive',
+      'Drawer.021': 'Drawer -> Archive',
+      'Drawer.022': 'Drawer -> Archive',
+      Trash: 'Trash -> Archive',
+      Window: 'Window -> X / Build notes',
+      Bookshelf: 'Bookshelf -> Second Brain',
+      Cactus: 'Cactus -> Second Brain',
+      'Rubix Cube': 'Rubix Cube -> Mission Control',
+      Skateboard: 'Skateboard -> Finger Tap FX',
+      Mat: 'Mat -> Ray-Ban PT',
+      Can1: 'Can -> Coffee',
+      Can2: 'Can -> Coffee',
+      Can3: 'Can -> Coffee',
+      Pokeball: 'Pokeball -> Visual PRM',
+      Chair: 'Chair -> Hermes OS',
     };
 
     const jumpNames = new Set(['Backpack', 'Book', 'Cactus', 'Can1', 'Can2', 'Can3', 'Mat', 'Mug', 'Name', 'Pokeball', 'Rubix Cube', 'Skateboard']);
@@ -959,24 +1053,29 @@ const html = String.raw`<!DOCTYPE html>
       const menuItems = [
         ['physio', 'physio_app'],
         ['face', 'Face Fitness'],
+        ['finger', 'Finger Tap'],
         ['hawkeye', 'Hawkeye'],
+        ['mission', 'Mission'],
+        ['secondbrain', '2nd Brain'],
         ['github', 'GitHub'],
+        ['rayban', 'Ray-Ban'],
+        ['coffee', 'Coffee'],
         ['portfolio', 'Profile'],
       ];
-      monitorContext.font = '900 30px Montserrat, sans-serif';
+      monitorContext.font = '900 22px Montserrat, sans-serif';
       menuItems.forEach(([key, label], index) => {
         const x = 58;
-        const y = 76 + index * 86;
+        const y = 62 + index * 58;
         const w = 220;
-        const h = 58;
+        const h = 42;
         const active = key === activeMonitorKey;
         monitorContext.fillStyle = active ? '#525ceb' : '#ffffff';
         monitorContext.fillRect(x, y, w, h);
         monitorContext.strokeStyle = '#525ceb';
-        monitorContext.lineWidth = 5;
+        monitorContext.lineWidth = 4;
         monitorContext.strokeRect(x, y, w, h);
         monitorContext.fillStyle = active ? '#f8edff' : '#525ceb';
-        monitorContext.fillText(label, x + 16, y + 39);
+        monitorContext.fillText(label, x + 14, y + 29);
         monitorClickZones.push({ key, x, y, w, h, type: 'select' });
       });
 
@@ -1004,10 +1103,13 @@ const html = String.raw`<!DOCTYPE html>
       monitorContext.fillStyle = '#525ceb';
       const buttonY = Math.min(nextY + 28, 520);
       monitorContext.fillRect(contentX, buttonY, 320, 58);
+      monitorContext.fillRect(contentX + 350, buttonY, 190, 58);
       monitorContext.fillStyle = '#f8edff';
       monitorContext.font = '900 30px Montserrat, sans-serif';
       monitorContext.fillText('OPEN SELECTED', contentX + 28, buttonY + 40);
+      monitorContext.fillText('VIEW ROOM', contentX + 378, buttonY + 40);
       monitorClickZones.push({ key: activeMonitorKey, x: contentX, y: buttonY, w: 320, h: 58, type: 'open' });
+      monitorClickZones.push({ key: 'home', x: contentX + 350, y: buttonY, w: 190, h: 58, type: 'scene' });
 
       monitorContext.fillStyle = 'rgba(248, 237, 255, 0.48)';
       monitorContext.font = '700 22px Montserrat, sans-serif';
@@ -1072,7 +1174,15 @@ const html = String.raw`<!DOCTYPE html>
         canvas: { x, y },
         zone: zone ? { key: zone.key, type: zone.type } : null,
       };
-      if (!zone) return false;
+      if (!zone) {
+        focusMonitor();
+        if (objectStatus) objectStatus.textContent = 'Computer screen focused. Select a folder inside the monitor.';
+        return true;
+      }
+      if (zone.type === 'scene') {
+        viewScene();
+        return true;
+      }
       if (zone.type === 'open') {
         if (currentMonitorEntry?.url) window.open(currentMonitorEntry.url, '_blank', 'noopener,noreferrer');
         return true;
@@ -1142,13 +1252,31 @@ const html = String.raw`<!DOCTYPE html>
     }
 
     function focusMonitor() {
-      controls.target.set(-3.28, 4.06, -1.78);
-      camera.position.set(6.35, 5.28, 2.45);
+      document.body.classList.add('monitor-focused');
+      camera.fov = 38;
+      camera.updateProjectionMatrix();
+      controls.minDistance = 1.1;
+      controls.maxDistance = 12;
+      if (liveMonitorPlane) {
+        const target = new THREE.Vector3();
+        liveMonitorPlane.getWorldPosition(target);
+        target.y += 0.02;
+        controls.target.copy(target);
+        camera.position.copy(target).add(monitorCameraOffset);
+      } else {
+        controls.target.set(-3.28, 4.06, -1.78);
+        camera.position.set(-1.72, 4.28, -1.08);
+      }
       controls.update();
     }
 
     function viewScene() {
+      document.body.classList.remove('monitor-focused');
       monitorOs.classList.remove('is-visible');
+      camera.fov = 45;
+      camera.updateProjectionMatrix();
+      controls.minDistance = 6;
+      controls.maxDistance = 30;
       controls.target.set(-1, 3, -1.5);
       camera.position.set(14.7, 8.2, 6.1);
       controls.update();
@@ -1212,6 +1340,7 @@ const html = String.raw`<!DOCTYPE html>
       const name = target.name;
       if (objectActions[name]) {
         objectActions[name]();
+        if (name === 'Chair') spinObject(target);
       } else if (name === 'Chair') {
         spinObject(target);
       } else {
@@ -1281,6 +1410,9 @@ const html = String.raw`<!DOCTYPE html>
     closeWelcomeButton.addEventListener('click', () => welcome.classList.add('hidden'));
     window.addEventListener('pointerdown', handlePointer);
     window.addEventListener('pointermove', handleHover);
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') viewScene();
+    });
     window.addEventListener('resize', resize);
 
     function animate() {
