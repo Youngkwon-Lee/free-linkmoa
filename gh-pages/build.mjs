@@ -3,7 +3,7 @@
  * config.yml -> out/index.html
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { copyFileSync, existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import yaml from 'js-yaml';
@@ -1523,6 +1523,7 @@ const html = `<!DOCTYPE html>
 
     <footer>
       <p>Kinelo is curated by Youngkwon Lee. Built with <a href="https://github.com/Youngkwon-Lee/free-linkmoa">free-linkmoa</a>.</p>
+      <p>3D room base model adapted from the open-source <a href="https://github.com/Rowobin/3D-Room-Portfolio" target="_blank" rel="noopener noreferrer">Rowobin/3D-Room-Portfolio</a>.</p>
     </footer>
   </main>
 
@@ -1591,8 +1592,18 @@ const html = `<!DOCTYPE html>
       });
     });
   </script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.164.1/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.164.1/examples/jsm/"
+      }
+    }
+  </script>
   <script type="module">
-    import * as THREE from 'https://unpkg.com/three@0.164.1/build/three.module.js';
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
     const labHero = document.querySelector('.lab-hero');
     const canvas = document.getElementById('lab-scene');
@@ -1610,60 +1621,33 @@ const html = `<!DOCTYPE html>
       camera.position.set(5.2, 4.2, 8.2);
       camera.lookAt(0, 0.8, 0);
 
-      const group = new THREE.Group();
-      scene.add(group);
-
-      const materials = {
-        desk: new THREE.MeshStandardMaterial({ color: 0x2a2118, roughness: 0.8, metalness: 0.05 }),
-        cream: new THREE.MeshStandardMaterial({ color: 0xf6f1e7, roughness: 0.55, metalness: 0.05 }),
-        brass: new THREE.MeshStandardMaterial({ color: 0xb8a37f, roughness: 0.38, metalness: 0.35 }),
-        glass: new THREE.MeshStandardMaterial({ color: 0x7fd8b5, roughness: 0.12, metalness: 0.05, transparent: true, opacity: 0.42 }),
-        dark: new THREE.MeshStandardMaterial({ color: 0x10100e, roughness: 0.65, metalness: 0.18 }),
-        pink: new THREE.MeshStandardMaterial({ color: 0xff79b8, roughness: 0.42, metalness: 0.1 }),
-      };
-
-      const addBox = (name, size, position, material) => {
-        const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), material);
-        mesh.name = name;
-        mesh.position.set(...position);
-        group.add(mesh);
-        return mesh;
-      };
-
-      const addSphere = (name, radius, position, material, scale = [1, 1, 1]) => {
-        const mesh = new THREE.Mesh(new THREE.SphereGeometry(radius, 32, 24), material);
-        mesh.name = name;
-        mesh.position.set(...position);
-        mesh.scale.set(...scale);
-        group.add(mesh);
-        return mesh;
-      };
-
-      addBox('clinical desk', [7.2, 0.28, 3.8], [0, -0.15, 0], materials.desk);
-      addBox('monitor base', [1.4, 0.18, 0.8], [0, 0.16, -0.78], materials.dark);
-      addBox('kinelo monitor', [2.7, 1.55, 0.16], [0, 1.18, -1.05], materials.dark);
-      addBox('monitor glow', [2.38, 1.2, 0.03], [0, 1.2, -0.95], materials.glass);
-      addBox('paper stack 1', [1.0, 0.08, 0.72], [-2.35, 0.1, 0.35], materials.cream);
-      addBox('paper stack 2', [1.05, 0.08, 0.72], [-2.32, 0.22, 0.32], materials.brass);
-      addBox('hermes server', [0.8, 1.0, 0.65], [2.55, 0.52, -0.45], materials.dark);
-      addBox('tap timer', [0.82, 0.2, 0.82], [1.85, 0.08, 0.82], materials.brass);
-      addSphere('face model', 0.58, [-1.55, 0.62, -0.55], materials.pink, [0.82, 1.1, 0.62]);
-      addSphere('finger tap node', 0.18, [1.85, 0.38, 0.82], materials.glass);
-      addSphere('visual prm node', 0.16, [-2.35, 0.46, 0.36], materials.glass);
-      addSphere('mission control node', 0.2, [2.55, 1.16, -0.45], materials.glass);
-
-      const curveMaterial = new THREE.LineBasicMaterial({ color: 0xb8a37f, transparent: true, opacity: 0.42 });
-      const makeLine = (points) => {
-        const geometry = new THREE.BufferGeometry().setFromPoints(points.map((p) => new THREE.Vector3(...p)));
-        const line = new THREE.Line(geometry, curveMaterial);
-        group.add(line);
-      };
-      makeLine([[0, 1.2, -0.85], [-1.55, 0.75, -0.55], [-2.35, 0.48, 0.36]]);
-      makeLine([[0, 1.2, -0.85], [1.85, 0.42, 0.82], [2.55, 1.16, -0.45]]);
-
-      const grid = new THREE.GridHelper(8, 18, 0xb8a37f, 0x4b4233);
-      grid.position.y = -0.28;
-      group.add(grid);
+      const room = new THREE.Group();
+      scene.add(room);
+      const loader = new GLTFLoader();
+      loader.load(
+        './assets/portfolio_room.glb',
+        (gltf) => {
+          room.add(gltf.scene);
+          gltf.scene.traverse((child) => {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+              if (child.material) {
+                child.material.envMapIntensity = 0.65;
+              }
+            }
+          });
+          const box = new THREE.Box3().setFromObject(gltf.scene);
+          const center = box.getCenter(new THREE.Vector3());
+          gltf.scene.position.sub(center);
+          gltf.scene.scale.setScalar(1.14);
+          labHero.classList.add('is-webgl-ready');
+        },
+        undefined,
+        () => {
+          labHero.classList.remove('is-webgl-ready');
+        },
+      );
 
       scene.add(new THREE.AmbientLight(0xf6f1e7, 1.2));
       const key = new THREE.DirectionalLight(0xf6f1e7, 2.6);
@@ -1672,6 +1656,16 @@ const html = `<!DOCTYPE html>
       const accent = new THREE.PointLight(0x80d8b7, 3.5, 7);
       accent.position.set(-2, 2.6, 1.6);
       scene.add(accent);
+
+      const controls = new OrbitControls(camera, canvas);
+      controls.enablePan = false;
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.055;
+      controls.minDistance = 7.5;
+      controls.maxDistance = 18;
+      controls.minPolarAngle = Math.PI / 4.2;
+      controls.maxPolarAngle = Math.PI / 2.08;
+      controls.target.set(0, 0.8, 0);
 
       const pointer = { x: 0, y: 0 };
       labHero.addEventListener('pointermove', (event) => {
@@ -1693,18 +1687,13 @@ const html = `<!DOCTYPE html>
       const clock = new THREE.Clock();
       const animate = () => {
         const elapsed = clock.getElapsedTime();
-        group.rotation.y = -0.22 + pointer.x * 0.12 + Math.sin(elapsed * 0.28) * 0.03;
-        group.rotation.x = -0.02 + pointer.y * 0.04;
-        group.children.forEach((child) => {
-          if (child.name?.includes('node') || child.name?.includes('model')) {
-            child.position.y += Math.sin(elapsed * 1.8 + child.id) * 0.0009;
-          }
-        });
+        room.rotation.y = -0.34 + pointer.x * 0.12 + Math.sin(elapsed * 0.22) * 0.025;
+        room.rotation.x = pointer.y * 0.025;
+        controls.update();
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
       };
 
-      labHero.classList.add('is-webgl-ready');
       animate();
     }
   </script>
@@ -1713,6 +1702,11 @@ const html = `<!DOCTYPE html>
 
 const outDir = join(__dirname, '..', 'out');
 mkdirSync(outDir, { recursive: true });
+mkdirSync(join(outDir, 'assets'), { recursive: true });
+const roomModelPath = join(__dirname, 'assets', 'portfolio_room.glb');
+if (existsSync(roomModelPath)) {
+  copyFileSync(roomModelPath, join(outDir, 'assets', 'portfolio_room.glb'));
+}
 writeFileSync(join(outDir, 'index.html'), html, 'utf8');
 
 const itemCount = sections.reduce((sum, section) => sum + (section.items?.length || 0), 0);
