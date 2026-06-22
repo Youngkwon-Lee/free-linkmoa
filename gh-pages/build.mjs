@@ -397,6 +397,153 @@ const html = String.raw`<!DOCTYPE html>
       text-decoration: underline;
     }
 
+    .monitor-os {
+      z-index: 45;
+      position: fixed;
+      left: 50%;
+      top: 52%;
+      width: min(720px, calc(100vw - 36px));
+      max-height: min(520px, calc(100vh - 170px));
+      overflow: hidden;
+      border: 3px solid var(--primary);
+      border-radius: 18px;
+      color: var(--ink);
+      background: rgba(248, 237, 255, 0.96);
+      box-shadow: 12px 12px 0 rgba(34, 41, 111, 0.85), 0 24px 80px rgba(0, 0, 0, 0.34);
+      transform: translate(-50%, -50%) scale(0.96);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .monitor-os.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .monitor-titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 3px solid var(--primary);
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .window-dots span {
+      width: 13px;
+      height: 13px;
+      border: 2px solid var(--primary);
+      border-radius: 50%;
+      background: var(--paper);
+    }
+
+    .monitor-titlebar strong {
+      color: var(--primary);
+      font-size: 1.25rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .monitor-titlebar button {
+      border: 2px solid var(--primary);
+      border-radius: 999px;
+      padding: 4px 10px;
+      color: var(--paper);
+      background: var(--primary);
+      cursor: pointer;
+    }
+
+    .monitor-body {
+      display: grid;
+      grid-template-columns: 190px 1fr;
+      min-height: 360px;
+    }
+
+    .monitor-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-right: 3px solid var(--primary);
+      padding: 16px;
+      background: rgba(216, 220, 255, 0.45);
+    }
+
+    .monitor-sidebar button {
+      border: 2px solid var(--primary);
+      border-radius: 12px;
+      padding: 10px 11px;
+      color: var(--primary);
+      text-align: left;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .monitor-sidebar button.is-active {
+      color: var(--paper);
+      background: var(--primary);
+    }
+
+    .monitor-content {
+      padding: 18px;
+      overflow-y: auto;
+      background:
+        linear-gradient(90deg, rgba(82, 92, 235, 0.08) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(82, 92, 235, 0.08) 1px, transparent 1px),
+        #f8edff;
+      background-size: 22px 22px;
+    }
+
+    .monitor-content .eyebrow {
+      color: var(--primary);
+      font-family: "Montserrat", sans-serif;
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .monitor-content h2 {
+      margin: 8px 0 10px;
+      color: var(--primary);
+      font-size: clamp(2.8rem, 8vw, 5rem);
+      line-height: 0.86;
+      text-transform: uppercase;
+    }
+
+    .monitor-content p {
+      max-width: 520px;
+      font-family: "Montserrat", sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      line-height: 1.65;
+      color: rgba(39, 37, 56, 0.74);
+    }
+
+    .monitor-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .monitor-actions button,
+    .monitor-actions a {
+      border: 2px solid var(--primary);
+      border-radius: 999px;
+      padding: 9px 13px;
+      color: var(--primary);
+      background: #fff;
+      cursor: pointer;
+    }
+
     @media (max-width: 760px) {
       body {
         font-size: 18px;
@@ -431,6 +578,22 @@ const html = String.raw`<!DOCTYPE html>
 
       .popup-body {
         padding: 18px;
+      }
+
+      .monitor-os {
+        top: 54%;
+        max-height: calc(100vh - 150px);
+      }
+
+      .monitor-body {
+        grid-template-columns: 1fr;
+      }
+
+      .monitor-sidebar {
+        flex-direction: row;
+        overflow-x: auto;
+        border-right: 0;
+        border-bottom: 3px solid var(--primary);
       }
     }
   </style>
@@ -514,6 +677,32 @@ const html = String.raw`<!DOCTYPE html>
     </div>
   </div>
 
+  <section id="monitor-os" class="monitor-os" aria-label="Computer monitor interface">
+    <div class="monitor-titlebar">
+      <div class="window-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+      <strong>Kinelo Monitor</strong>
+      <button id="monitor-close" type="button">Close</button>
+    </div>
+    <div class="monitor-body">
+      <div class="monitor-sidebar">
+        <button type="button" data-monitor-key="physio">physio_app</button>
+        <button type="button" data-monitor-key="face">Face Fitness</button>
+        <button type="button" data-monitor-key="hawkeye">Hawkeye</button>
+        <button type="button" data-monitor-key="github">GitHub</button>
+        <button type="button" data-monitor-key="portfolio">Profile</button>
+      </div>
+      <div class="monitor-content">
+        <span id="monitor-eyebrow" class="eyebrow">KINELO LAB</span>
+        <h2 id="monitor-title">Select Object</h2>
+        <p id="monitor-body">Click a room object to load project details inside this computer.</p>
+        <div class="monitor-actions">
+          <button id="monitor-open" type="button">Open selected</button>
+          <button id="monitor-view-scene" type="button">View scene</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <script type="importmap">
     {
       "imports": {
@@ -537,6 +726,14 @@ const html = String.raw`<!DOCTYPE html>
     const closeWelcomeButton = document.getElementById('welcome-exit-button');
     const objectStatus = document.getElementById('object-status');
     const openSelected = document.getElementById('open-selected');
+    const monitorOs = document.getElementById('monitor-os');
+    const monitorClose = document.getElementById('monitor-close');
+    const monitorOpen = document.getElementById('monitor-open');
+    const monitorViewScene = document.getElementById('monitor-view-scene');
+    const monitorEyebrow = document.getElementById('monitor-eyebrow');
+    const monitorTitle = document.getElementById('monitor-title');
+    const monitorBody = document.getElementById('monitor-body');
+    const monitorTabs = [...document.querySelectorAll('[data-monitor-key]')];
 
     const monitorEntries = {
       home: {
@@ -599,6 +796,8 @@ const html = String.raw`<!DOCTYPE html>
       currentMonitorEntry = monitorEntries[key] || monitorEntries.home;
       drawMonitorScreen(currentMonitorEntry);
       focusMonitor();
+      updateMonitorOs(key);
+      monitorOs.classList.add('is-visible');
       if (objectStatus) objectStatus.textContent = currentMonitorEntry.title + ' shown on computer';
     };
 
@@ -881,6 +1080,22 @@ const html = String.raw`<!DOCTYPE html>
       controls.update();
     }
 
+    function viewScene() {
+      monitorOs.classList.remove('is-visible');
+      controls.target.set(-1, 3, -1.5);
+      camera.position.set(14.7, 8.2, 6.1);
+      controls.update();
+    }
+
+    function updateMonitorOs(key) {
+      const entry = monitorEntries[key] || currentMonitorEntry || monitorEntries.home;
+      currentMonitorEntry = entry;
+      monitorEyebrow.textContent = entry.eyebrow;
+      monitorTitle.textContent = entry.title;
+      monitorBody.textContent = entry.body;
+      monitorTabs.forEach((tab) => tab.classList.toggle('is-active', tab.dataset.monitorKey === key));
+    }
+
     function resolveInteractable(object) {
       let current = object;
       while (current) {
@@ -968,6 +1183,16 @@ const html = String.raw`<!DOCTYPE html>
       if (currentMonitorEntry?.url) {
         window.open(currentMonitorEntry.url, '_blank', 'noopener,noreferrer');
       }
+    });
+    monitorOpen.addEventListener('click', () => {
+      if (currentMonitorEntry?.url) {
+        window.open(currentMonitorEntry.url, '_blank', 'noopener,noreferrer');
+      }
+    });
+    monitorViewScene.addEventListener('click', viewScene);
+    monitorClose.addEventListener('click', viewScene);
+    monitorTabs.forEach((tab) => {
+      tab.addEventListener('click', () => showOnMonitor(tab.dataset.monitorKey));
     });
     brandOpen.addEventListener('click', () => welcome.classList.toggle('hidden'));
     closePopupButton.addEventListener('click', () => popup.classList.add('hidden'));
