@@ -632,21 +632,21 @@ const html = String.raw`<!DOCTYPE html>
   </div>
 
   <nav class="dock" aria-label="Kinelo shortcuts">
-    <button id="open-portfolio" type="button">Portfolio</button>
-    <button id="open-selected" type="button">Open selected</button>
+    <button id="open-portfolio" type="button">View Scene</button>
+    <button id="open-selected" type="button">Explore More</button>
   </nav>
 
   <div id="welcome" class="welcome">
     <div class="welcome-content">
       <button id="welcome-exit-button" class="popup-close" type="button">&times;</button>
       <div class="popup-body">
-        <h1 class="hero-title">Kinelo Lab Room</h1>
+        <h1 class="hero-title">Youngkwon’s<br>Desk Tour</h1>
         <p class="lead">${esc(hero.description || profile.bio || '')}</p>
-        <p class="lead">이 창을 닫은 다음 방 안의 컴퓨터, Portfolio 간판, GitHub 아이콘, 책, 머그컵, 의자를 직접 클릭할 수 있습니다.</p>
+        <p class="lead">Diya Basu의 3D desk portfolio 흐름처럼, 전체 방을 본 뒤 컴퓨터 모니터 안의 폴더에서 About, Skills, Projects, Work, Contact를 탐색합니다.</p>
         <div class="quick-links">
           ${projects.slice(0, 5).map(linkButton).join('')}
         </div>
-        <p class="credit">이 페이지는 open-source 3D room portfolio 구조를 Kinelo hub로 재구성했습니다. Base room model: <a href="https://github.com/Rowobin/3D-Room-Portfolio" target="_blank" rel="noopener noreferrer">Rowobin/3D-Room-Portfolio</a>.</p>
+        <p class="credit">Reference flow: desk scene, monitor focus, and Mac-OS-style sections. Base room model: <a href="https://github.com/Rowobin/3D-Room-Portfolio" target="_blank" rel="noopener noreferrer">Rowobin/3D-Room-Portfolio</a>.</p>
       </div>
     </div>
   </div>
@@ -749,10 +749,40 @@ const html = String.raw`<!DOCTYPE html>
 
     const monitorEntries = {
       home: {
-        eyebrow: 'KINELO LAB',
-        title: 'SELECT A ROOM OBJECT',
-        body: 'Click the computer, portfolio sign, GitHub icon, book, mug, or backpack. The selected project appears on this monitor.',
+        eyebrow: 'WELCOME',
+        title: 'YOUNGKWON LEE',
+        body: 'Clinical AI builder and physical therapist building Kinelo: movement assessment, rehabilitation intelligence, and agent-operated product systems.',
         url: 'https://youngkwon-lee.github.io/free-linkmoa/',
+      },
+      about: {
+        eyebrow: 'ABOUT ME',
+        title: 'CLINICAL AI BUILDER',
+        body: 'I connect physical therapy, clinical reasoning, computer vision, multimodal AI, and product engineering into therapist-grade assessment tools.',
+        url: 'https://youngkwon-lee.github.io/free-linkmoa/',
+      },
+      skills: {
+        eyebrow: 'SKILLS',
+        title: 'PT + AI + PRODUCT',
+        body: 'Physical therapy assessment, movement analysis, React and Three.js interfaces, clinical workflow design, VLM/RAG research, and agent operations.',
+        url: 'https://github.com/Youngkwon-Lee',
+      },
+      projectsResume: {
+        eyebrow: 'PROJECTS',
+        title: 'KINELO SYSTEMS',
+        body: 'physio_app, Face Fitness, Finger Tap FX, Hawkeye, VisualPRM, Ray-Ban PT, Hermes operations, and rehabilitation labeling workbenches.',
+        url: 'https://youngkwon-lee.github.io/free-linkmoa/',
+      },
+      work: {
+        eyebrow: 'WORK',
+        title: 'FOUNDER / BUILDER',
+        body: 'Building Kinelo as a clinical AI lab: shipped demos, research pipelines, Notion knowledge systems, Vercel deployments, and local agent workflows.',
+        url: 'https://physio-app-steel.vercel.app',
+      },
+      contact: {
+        eyebrow: 'CONTACT',
+        title: 'LET’S CONNECT',
+        body: 'GitHub: Youngkwon-Lee. Product surfaces: physio_app and Face Fitness. Research: Hawkeye and VisualPRM. Social/build notes: X.',
+        url: 'https://github.com/Youngkwon-Lee',
       },
       portfolio: {
         eyebrow: 'PROFILE',
@@ -1066,16 +1096,16 @@ const html = String.raw`<!DOCTYPE html>
       monitorContext.fillText('Desktop workspace inside the monitor', 622, 44);
 
       const desktopItems = [
+        ['about', 'About Me'],
+        ['skills', 'Skills'],
+        ['projectsResume', 'Projects'],
+        ['work', 'Work'],
+        ['contact', 'Contact'],
         ['physio', 'physio_app'],
-        ['face', 'Face Fitness'],
-        ['finger', 'Finger Tap'],
+        ['face', 'Face Fit'],
         ['hawkeye', 'Hawkeye'],
-        ['mission', 'Mission'],
-        ['secondbrain', '2nd Brain'],
+        ['secondbrain', 'Research'],
         ['github', 'GitHub'],
-        ['rayban', 'Ray-Ban'],
-        ['coffee', 'Coffee'],
-        ['portfolio', 'Profile'],
       ];
 
       const drawFolder = (key, label, index) => {
@@ -1164,7 +1194,7 @@ const html = String.raw`<!DOCTYPE html>
       monitorContext.fillStyle = 'rgba(248, 237, 255, 0.78)';
       roundRect(264, 638, 496, 52, 26);
       monitorContext.fill();
-      ['physio', 'face', 'hawkeye', 'mission', 'secondbrain', 'github'].forEach((key, index) => {
+      ['about', 'skills', 'projectsResume', 'work', 'contact', 'github'].forEach((key, index) => {
         const cx = 302 + index * 78;
         monitorContext.fillStyle = key === activeMonitorKey ? '#525ceb' : '#f8edff';
         monitorContext.beginPath();
@@ -1450,11 +1480,11 @@ const html = String.raw`<!DOCTYPE html>
       },
     );
 
-    openPortfolio.addEventListener('click', () => popup.classList.toggle('hidden'));
+    openPortfolio.addEventListener('click', viewScene);
     openSelected.addEventListener('click', () => {
-      if (currentMonitorEntry?.url) {
-        window.open(currentMonitorEntry.url, '_blank', 'noopener,noreferrer');
-      }
+      welcome.classList.add('hidden');
+      popup.classList.add('hidden');
+      focusMonitor();
     });
     monitorOpen.addEventListener('click', () => {
       if (currentMonitorEntry?.url) {
