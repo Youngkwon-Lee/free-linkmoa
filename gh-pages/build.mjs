@@ -126,6 +126,11 @@ const navHtml = sections
   .map((section, index) => `<button class="tab${index === 0 ? ' is-active' : ''}" data-tab="${esc(section.id)}">${esc(section.label)}</button>`)
   .join('\n        ');
 
+const topNavHtml = sections
+  .slice(0, 4)
+  .map((section) => `<a href="#${esc(section.id)}" data-jump-tab="${esc(section.id)}">${esc(section.label)}</a>`)
+  .join('\n          ');
+
 const sectionsHtml = sections
   .map((section, index) => `<section class="section-panel reveal-block" id="${esc(section.id)}" data-panel="${esc(section.id)}" data-section-index="${String(index + 1).padStart(2, '0')}">
     <div class="section-heading">
@@ -899,6 +904,223 @@ const css = `
       scroll-behavior: auto !important;
     }
   }
+  .topnav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(14px, 2.4vw, 28px);
+    color: rgba(246,241,231,0.72);
+    font: 800 0.76rem/1 ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .topnav a {
+    text-decoration: none;
+  }
+  .hero-scroll {
+    position: absolute;
+    left: clamp(28px, 5vw, 64px);
+    bottom: 30px;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(246,241,231,0.62);
+    font: 900 0.72rem/1 ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .hero-scroll::before {
+    content: "";
+    width: 42px;
+    height: 1px;
+    background: rgba(246,241,231,0.46);
+  }
+  body {
+    background: #050505;
+    color: #f6f1e7;
+  }
+  body::before {
+    opacity: 0.12;
+    background-size: 72px 72px;
+    background-image:
+      linear-gradient(rgba(246,241,231,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(246,241,231,0.08) 1px, transparent 1px);
+  }
+  body::after {
+    background: radial-gradient(circle, rgba(246,241,231,0.12), transparent 56%);
+  }
+  .page {
+    width: min(1280px, calc(100% - 44px));
+    padding-top: 22px;
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    margin-bottom: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(246,241,231,0.1);
+    background: rgba(5,5,5,0.72);
+    backdrop-filter: blur(18px);
+  }
+  .identity strong {
+    color: #f6f1e7;
+  }
+  .identity span,
+  .status-pill {
+    color: rgba(246,241,231,0.55);
+  }
+  .hero {
+    min-height: calc(100vh - 88px);
+    grid-template-columns: minmax(0, 1.02fr) minmax(340px, 0.78fr);
+    align-items: stretch;
+    gap: clamp(18px, 3vw, 42px);
+    margin-bottom: 0;
+    position: relative;
+  }
+  .hero-copy {
+    min-height: 680px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: clamp(42px, 8vw, 96px) 0 92px;
+  }
+  .hero-copy::before,
+  .hero-copy::after {
+    display: none;
+  }
+  .eyebrow {
+    color: #b8a37f;
+    margin-bottom: 28px;
+  }
+  .eyebrow::before {
+    background: #b8a37f;
+  }
+  h1 {
+    font-size: clamp(4.8rem, 15vw, 14.5rem);
+    line-height: 0.76;
+    letter-spacing: -0.115em;
+    max-width: 940px;
+  }
+  .hero-subtitle {
+    max-width: 820px;
+    font-size: clamp(1.55rem, 3.3vw, 3.1rem);
+    line-height: 1.02;
+    color: #f6f1e7;
+  }
+  .hero-description {
+    max-width: 680px;
+    color: rgba(246,241,231,0.66);
+    font-size: 1.05rem;
+  }
+  .hero-proof span,
+  .button,
+  .status-pill {
+    border-color: rgba(246,241,231,0.18);
+    background: transparent;
+  }
+  .button.primary {
+    background: #f6f1e7;
+    color: #050505;
+  }
+  .portrait-card {
+    min-height: 680px;
+    border-radius: 0;
+    border-color: rgba(246,241,231,0.12);
+    background: #111;
+  }
+  .portrait-card img {
+    opacity: 0.9;
+    filter: grayscale(1) contrast(1.12) brightness(0.92);
+  }
+  .portrait-card::before {
+    border-radius: 0;
+  }
+  .portrait-card::after {
+    background:
+      linear-gradient(180deg, rgba(5,5,5,0.04), rgba(5,5,5,0.78) 78%),
+      linear-gradient(90deg, rgba(5,5,5,0.18), transparent 45%);
+  }
+  .portrait-copy h2 {
+    color: #f6f1e7;
+  }
+  .portrait-copy p,
+  .section-heading p,
+  .description,
+  footer {
+    color: rgba(246,241,231,0.62);
+  }
+  .manifesto-strip {
+    margin-top: 0;
+    background: #f6f1e7;
+    border: 0;
+  }
+  .manifesto-track span {
+    color: #050505;
+  }
+  .living-orbit {
+    display: none;
+  }
+  .tabs {
+    display: none;
+  }
+  .section-panel {
+    min-height: 82vh;
+    padding: clamp(84px, 12vw, 150px) 0;
+    border-top-color: rgba(246,241,231,0.14);
+  }
+  .section-heading {
+    grid-template-columns: 220px minmax(0, 1fr);
+    max-width: 1120px;
+  }
+  .section-kicker {
+    color: #b8a37f;
+  }
+  .section-heading h2 {
+    font-size: clamp(3.4rem, 9vw, 8.5rem);
+    line-height: 0.82;
+  }
+  .card {
+    min-height: 250px;
+    border-radius: 0;
+    border-color: rgba(246,241,231,0.12);
+    background: transparent;
+    box-shadow: none;
+  }
+  .card[href]:hover {
+    transform: translateY(-6px);
+    border-color: rgba(246,241,231,0.52);
+    background: rgba(246,241,231,0.04);
+  }
+  .mark {
+    background: #f6f1e7;
+    color: #050505;
+    border-radius: 0;
+  }
+  .badges span {
+    border-color: rgba(246,241,231,0.14);
+    color: rgba(246,241,231,0.58);
+  }
+  .badges .status,
+  .subtitle,
+  .arrow {
+    color: #b8a37f;
+  }
+  @media (max-width: 860px) {
+    .topnav { display: none; }
+    .hero-copy,
+    .portrait-card {
+      min-height: 560px;
+    }
+    .section-heading {
+      grid-template-columns: 1fr;
+    }
+  }
 `.trim();
 
 const html = `<!DOCTYPE html>
@@ -928,6 +1150,9 @@ const html = `<!DOCTYPE html>
           <span>${esc(profile.eyebrow || profile.bio || '')}</span>
         </div>
       </div>
+      <nav class="topnav" aria-label="Primary navigation">
+          ${topNavHtml}
+      </nav>
       <div class="status-pill">Live portfolio OS</div>
     </header>
 
@@ -947,6 +1172,7 @@ const html = `<!DOCTYPE html>
           ${hero.primary?.url ? `<a class="button primary" href="${esc(hero.primary.url)}" target="_blank" rel="noopener noreferrer">${esc(hero.primary.label || 'Open')}</a>` : ''}
           ${hero.secondary?.target ? `<a class="button secondary" href="#${esc(hero.secondary.target)}" data-jump-tab="${esc(hero.secondary.target)}">${esc(hero.secondary.label || 'Explore')}</a>` : ''}
         </div>
+        <div class="hero-scroll">Scroll</div>
       </div>
       <aside class="portrait-card" aria-label="Youngkwon Lee portrait">
         ${profile.avatar ? `<img src="${esc(profile.avatar)}" alt="${esc(profile.name)} portrait">` : ''}
