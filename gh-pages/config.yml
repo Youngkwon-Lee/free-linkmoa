@@ -1,6 +1,6 @@
 profile:
-  name: "Youngkwon"
-  bio: "AI Builder"
+  name: "Youngkwon Lee"
+  bio: "Clinical AI Builder · Physical Therapist · Building physio_app and Kinelo"
   avatar: "https://github.com/Youngkwon-Lee.png"
 
 theme:
@@ -12,6 +12,11 @@ theme:
   accent: "#3b82f6"
 
 links:
+  - title: "Face Fitness"
+    url: "https://face-fitness.vercel.app"
+    icon: "link"
+    enabled: true
+
   - title: "GitHub"
     url: "https://github.com/Youngkwon-Lee"
     icon: "github"
@@ -23,16 +28,6 @@ links:
     icon: "linkedin"
     enabled: true
 
-  - title: "YouTube"
-    url: ""
-    icon: "youtube"
-    enabled: false
-
-  - title: "Instagram"
-    url: "https://www.instagram.com/young_kwon_/"
-    icon: "instagram"
-    enabled: true
-
   - title: "Threads"
     url: "https://www.threads.com/@young_kwon_"
     icon: "threads"
@@ -42,3 +37,18 @@ links:
     url: "https://x.com/Yoonjun_dev"
     icon: "twitter"
     enabled: true
+
+  - title: "Instagram"
+    url: "https://www.instagram.com/young_kwon_/"
+    icon: "instagram"
+    enabled: true
+
+  - title: "Move Well Live"
+    url: "https://www.instagram.com/move.well.live/"
+    icon: "instagram"
+    enabled: true
+
+  - title: "YouTube"
+    url: ""
+    icon: "youtube"
+    enabled: false
