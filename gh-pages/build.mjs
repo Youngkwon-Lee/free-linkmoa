@@ -126,8 +126,15 @@ const navHtml = sections
   .map((section, index) => `<button class="tab${index === 0 ? ' is-active' : ''}" data-tab="${esc(section.id)}">${esc(section.label)}</button>`)
   .join('\n        ');
 
-const topNavHtml = sections
-  .slice(0, 4)
+const editorialNav = [
+  { id: 'selected-work', label: 'Selected Work' },
+  { id: 'philosophy', label: 'Philosophy' },
+  { id: 'now', label: 'Now' },
+  { id: 'about', label: 'About' },
+  { id: 'connect', label: 'Connect' },
+];
+
+const topNavHtml = editorialNav
   .map((section) => `<a href="#${esc(section.id)}" data-jump-tab="${esc(section.id)}">${esc(section.label)}</a>`)
   .join('\n          ');
 
@@ -143,6 +150,96 @@ const sectionsHtml = sections
     </div>
   </section>`)
   .join('\n\n      ');
+
+const projectItems = sections.find((section) => section.id === 'projects')?.items || [];
+const researchItems = sections.find((section) => section.id === 'research')?.items || [];
+const socialItems = sections.find((section) => section.id === 'social')?.items || [];
+const selectedWorkItems = Array.from(new Map([
+  ...projectItems.filter((item) => ['physio_app', 'Face Fitness', 'Finger Tap FX', 'VisualPRM Medical PRM'].includes(item.title)),
+  ...researchItems.filter((item) => ['Hawkeye', 'VisualPRM'].includes(item.title)),
+].map((item) => [item.url || item.title, item])).values()).slice(0, 6);
+
+const workRowsHtml = selectedWorkItems
+  .map((item, index) => {
+    const tag = item.url ? 'a' : 'article';
+    const href = item.url ? ` href="${esc(item.url)}" target="_blank" rel="noopener noreferrer"` : '';
+    return `<${tag}${href} class="work-row">
+      <span>${String(index + 1).padStart(2, '0')} · ${esc(item.meta || 'Work')}</span>
+      <strong>${esc(item.title)}</strong>
+      <p>${esc(item.description || item.subtitle || '')}</p>
+    </${tag}>`;
+  })
+  .join('\n        ');
+
+const socialRowsHtml = socialItems
+  .filter((item) => item.url)
+  .map((item) => `<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.title)}</a>`)
+  .join('\n          ');
+
+const editorialSectionsHtml = `
+      <section class="section-panel editorial-section reveal-block" id="selected-work" data-panel="selected-work" data-section-index="01">
+        <div class="section-heading">
+          <span class="section-kicker">01 / Selected Work</span>
+          <h2>만들고, 측정하고, 운영합니다.</h2>
+          <p>최근에 몰입한 것들 — 제품, 데모, 연구, 에이전트 운영.</p>
+        </div>
+        <div class="work-list">
+          ${workRowsHtml}
+        </div>
+      </section>
+
+      <section class="section-panel editorial-section reveal-block" id="philosophy" data-panel="philosophy" data-section-index="02">
+        <div class="quote-block">
+          <span class="section-kicker">02 / Philosophy</span>
+          <blockquote>
+            <p>Movement is clinical data.</p>
+            <p>좋은 평가는 환자의 움직임을 숫자로 줄이는 것이 아니라, 치료사가 다시 판단할 수 있는 상태로 만드는 일입니다.</p>
+          </blockquote>
+        </div>
+        <div class="essay-copy">
+          <p>Kinelo는 물리치료, 임상 추론, 멀티모달 AI, 에이전트 운영을 하나의 실험실로 묶는 프로젝트입니다. 목표는 치료사를 대체하는 자동화가 아니라, 관찰과 판단을 더 정확하게 기록하고 재사용하게 만드는 것입니다.</p>
+        </div>
+      </section>
+
+      <section class="section-panel editorial-section reveal-block" id="now" data-panel="now" data-section-index="03">
+        <div class="section-heading">
+          <span class="section-kicker">03 / Now</span>
+          <h2>Top of mind.</h2>
+          <p>지금 운영 중인 작업과 관심사.</p>
+        </div>
+        <div class="now-list">
+          <div><span>Product</span><strong>physio_app · Kinelo main surface</strong></div>
+          <div><span>Research</span><strong>Hawkeye · VisualPRM · clinical AI copilot</strong></div>
+          <div><span>Demos</span><strong>Face Fitness · Finger Tap FX · movement assessment</strong></div>
+          <div><span>Ops</span><strong>Mission Control · Hermes OS · second-brain</strong></div>
+          <div><span>Writing</span><strong>Clinical AI, rehab datasets, digital twin notes</strong></div>
+        </div>
+      </section>
+
+      <section class="section-panel editorial-section reveal-block" id="about" data-panel="about" data-section-index="04">
+        <div class="section-heading">
+          <span class="section-kicker">04 / About</span>
+          <h2>스펙보다 작동하는 결과물.</h2>
+          <p>Physical therapy 기반으로 사람의 움직임, 재활 평가, 임상 추론을 AI 제품으로 연결합니다.</p>
+        </div>
+        <div class="about-grid">
+          <div><span>Field</span><strong>Physical Therapy</strong></div>
+          <div><span>Build</span><strong>Clinical AI Products</strong></div>
+          <div><span>System</span><strong>Agent-operated workflows</strong></div>
+        </div>
+      </section>
+
+      <section class="section-panel editorial-section reveal-block" id="connect" data-panel="connect" data-section-index="05">
+        <div class="section-heading">
+          <span class="section-kicker">05 / Connect</span>
+          <h2>Clinical AI를 같이 만듭니다.</h2>
+          <p>협업, 연구, 제품 피드백, 인터뷰, 프로젝트 문의는 아래 채널로 연결하세요.</p>
+        </div>
+        <div class="connect-links">
+          ${socialRowsHtml}
+        </div>
+      </section>
+`;
 
 const css = `
   *, *::before, *::after { box-sizing: border-box; }
@@ -1121,6 +1218,121 @@ const css = `
       grid-template-columns: 1fr;
     }
   }
+  .work-list,
+  .now-list,
+  .about-grid,
+  .connect-links {
+    display: grid;
+    border-top: 1px solid rgba(246,241,231,0.16);
+  }
+  .work-row {
+    display: grid;
+    grid-template-columns: 170px minmax(220px, 0.75fr) minmax(260px, 1fr);
+    gap: 24px;
+    padding: 28px 0;
+    border-bottom: 1px solid rgba(246,241,231,0.16);
+    text-decoration: none;
+    transition: color 180ms ease, transform 180ms ease;
+  }
+  .work-row:hover {
+    color: #b8a37f;
+    transform: translateX(10px);
+  }
+  .work-row span,
+  .now-list span,
+  .about-grid span {
+    color: rgba(246,241,231,0.46);
+    font: 900 0.72rem/1.2 ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .work-row strong {
+    font-size: clamp(1.6rem, 3vw, 3.2rem);
+    line-height: 0.92;
+    letter-spacing: -0.07em;
+  }
+  .work-row p {
+    margin: 0;
+    color: rgba(246,241,231,0.58);
+    font: 1rem/1.6 ui-sans-serif, system-ui, sans-serif;
+  }
+  .quote-block {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 34px;
+  }
+  .quote-block blockquote {
+    margin: 0;
+  }
+  .quote-block p:first-child {
+    margin: 0;
+    font-size: clamp(4rem, 12vw, 12rem);
+    line-height: 0.78;
+    letter-spacing: -0.115em;
+  }
+  .quote-block p:last-child {
+    margin: 32px 0 0;
+    max-width: 820px;
+    color: rgba(246,241,231,0.68);
+    font-size: clamp(1.35rem, 2.4vw, 2.4rem);
+    line-height: 1.14;
+    letter-spacing: -0.04em;
+  }
+  .essay-copy {
+    margin-top: 46px;
+    margin-left: min(254px, 22vw);
+    max-width: 760px;
+    color: rgba(246,241,231,0.62);
+    font: 1.04rem/1.8 ui-sans-serif, system-ui, sans-serif;
+  }
+  .now-list div,
+  .about-grid div {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(246,241,231,0.16);
+  }
+  .now-list strong,
+  .about-grid strong {
+    font-size: clamp(1.5rem, 3vw, 3rem);
+    line-height: 0.95;
+    letter-spacing: -0.07em;
+  }
+  .connect-links {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+  }
+  .connect-links a {
+    min-height: 150px;
+    display: flex;
+    align-items: flex-end;
+    padding: 22px;
+    border-right: 1px solid rgba(246,241,231,0.16);
+    border-bottom: 1px solid rgba(246,241,231,0.16);
+    text-decoration: none;
+    font-size: clamp(1.4rem, 3vw, 3rem);
+    line-height: 0.95;
+    letter-spacing: -0.07em;
+  }
+  .connect-links a:hover {
+    background: #f6f1e7;
+    color: #050505;
+  }
+  @media (max-width: 760px) {
+    .work-row,
+    .quote-block,
+    .now-list div,
+    .about-grid div {
+      grid-template-columns: 1fr;
+    }
+    .essay-copy {
+      margin-left: 0;
+    }
+    .connect-links {
+      grid-template-columns: 1fr;
+    }
+  }
 `.trim();
 
 const html = `<!DOCTYPE html>
@@ -1196,12 +1408,8 @@ const html = `<!DOCTYPE html>
       ${featuredHtml}
     </section>
 
-    <nav class="tabs" aria-label="Content sections">
-      ${navHtml}
-    </nav>
-
-    <div class="panels">
-      ${sectionsHtml}
+    <div class="panels editorial-stack">
+      ${editorialSectionsHtml}
     </div>
 
     <footer>
@@ -1210,15 +1418,15 @@ const html = `<!DOCTYPE html>
   </main>
 
   <script>
-    const tabs = [...document.querySelectorAll('[data-tab]')];
+    const tabs = [...document.querySelectorAll('[data-jump-tab]')];
     const panels = [...document.querySelectorAll('[data-panel]')];
     const scrollPercent = document.getElementById('scroll-percent');
     const sectionRail = document.getElementById('section-rail');
     const activate = (id, shouldScroll = false) => {
-      tabs.forEach((tab) => tab.classList.toggle('is-active', tab.dataset.tab === id));
+      tabs.forEach((tab) => tab.classList.toggle('is-active', tab.dataset.jumpTab === id));
       const panel = panels.find((item) => item.dataset.panel === id);
       if (panel && sectionRail) {
-        const label = tabs.find((tab) => tab.dataset.tab === id)?.textContent || id;
+        const label = tabs.find((tab) => tab.dataset.jumpTab === id)?.textContent || id;
         sectionRail.textContent = (panel.dataset.sectionIndex || '00') + ' / ' + label;
       }
       if (panel && shouldScroll) {
@@ -1226,7 +1434,10 @@ const html = `<!DOCTYPE html>
         history.replaceState(null, '', '#' + id);
       }
     };
-    tabs.forEach((tab) => tab.addEventListener('click', () => activate(tab.dataset.tab, true)));
+    tabs.forEach((tab) => tab.addEventListener('click', (event) => {
+      event.preventDefault();
+      activate(tab.dataset.jumpTab, true);
+    }));
     document.querySelectorAll('[data-jump-tab]').forEach((link) => {
       link.addEventListener('click', (event) => {
         event.preventDefault();

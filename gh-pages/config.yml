@@ -23,7 +23,7 @@ hero:
     url: "https://physio-app-steel.vercel.app"
   secondary:
     label: "View projects"
-    target: "projects"
+    target: "selected-work"
 
 sections:
   - id: "projects"
