@@ -1333,6 +1333,96 @@ const css = `
       grid-template-columns: 1fr;
     }
   }
+  .lab-hero {
+    position: relative;
+    min-height: 92vh;
+    margin: 16px 0 44px;
+    border: 1px solid rgba(246,241,231,0.12);
+    overflow: hidden;
+    background: #070705;
+    isolation: isolate;
+  }
+  #lab-scene {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .lab-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(24px, 5vw, 68px);
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, rgba(5,5,5,0.82), transparent 62%),
+      linear-gradient(0deg, rgba(5,5,5,0.72), transparent 42%);
+  }
+  .lab-overlay h1 {
+    max-width: 820px;
+    margin: 0;
+    font-size: clamp(4.2rem, 12vw, 12rem);
+    line-height: 0.78;
+    letter-spacing: -0.115em;
+  }
+  .lab-overlay p {
+    max-width: 560px;
+    margin: 22px 0 0;
+    color: rgba(246,241,231,0.68);
+    font: 1.02rem/1.75 ui-sans-serif, system-ui, sans-serif;
+  }
+  .lab-kicker {
+    color: #b8a37f;
+    font: 900 0.74rem/1 ui-sans-serif, system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+  }
+  .lab-hotspots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 760px;
+  }
+  .lab-hotspots a {
+    pointer-events: auto;
+    border: 1px solid rgba(246,241,231,0.18);
+    border-radius: 999px;
+    padding: 9px 12px;
+    text-decoration: none;
+    color: rgba(246,241,231,0.72);
+    background: rgba(5,5,5,0.34);
+    backdrop-filter: blur(14px);
+    font: 900 0.7rem/1 ui-sans-serif, system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .lab-fallback {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    color: rgba(246,241,231,0.5);
+    font: 900 0.8rem/1.4 ui-sans-serif, system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    background: radial-gradient(circle, rgba(184,163,127,0.16), transparent 54%);
+  }
+  .lab-hero.is-webgl-ready .lab-fallback {
+    display: none;
+  }
+  @media (max-width: 860px) {
+    .lab-hero {
+      min-height: 78vh;
+    }
+    .lab-overlay {
+      background: linear-gradient(0deg, rgba(5,5,5,0.88), rgba(5,5,5,0.38));
+    }
+  }
 `.trim();
 
 const html = `<!DOCTYPE html>
@@ -1367,6 +1457,25 @@ const html = `<!DOCTYPE html>
       </nav>
       <div class="status-pill">Live portfolio OS</div>
     </header>
+
+    <section class="lab-hero" aria-label="Interactive Clinical AI Lab Desk">
+      <canvas id="lab-scene"></canvas>
+      <div class="lab-fallback">Clinical AI Lab Desk loading</div>
+      <div class="lab-overlay">
+        <div>
+          <div class="lab-kicker">Interactive Lab Desk / Three.js MVP</div>
+          <h1>Clinical AI Lab.</h1>
+          <p>Explore Kinelo as a working desk: product monitor, facial analysis model, finger-tap timer, research stack, and Hermes operations node.</p>
+        </div>
+        <div class="lab-hotspots">
+          <a href="https://physio-app-steel.vercel.app" target="_blank" rel="noopener noreferrer">physio_app</a>
+          <a href="https://face-fitness.vercel.app" target="_blank" rel="noopener noreferrer">Face Fitness</a>
+          <a href="https://finger-tap-fx.vercel.app" target="_blank" rel="noopener noreferrer">Finger Tap</a>
+          <a href="https://github.com/Youngkwon-Lee/Hawkeye_paper" target="_blank" rel="noopener noreferrer">Hawkeye</a>
+          <a href="https://github.com/Youngkwon-Lee/visualprm-medical-prm" target="_blank" rel="noopener noreferrer">VisualPRM</a>
+        </div>
+      </div>
+    </section>
 
     <section class="hero">
       <div class="hero-copy">
@@ -1481,6 +1590,123 @@ const html = `<!DOCTYPE html>
         card.style.setProperty('--card-y', ((event.clientY - rect.top) / rect.height * 100).toFixed(2) + '%');
       });
     });
+  </script>
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.164.1/build/three.module.js';
+
+    const labHero = document.querySelector('.lab-hero');
+    const canvas = document.getElementById('lab-scene');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (labHero && canvas && !reducedMotion) {
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x070705, 0.065);
+
+      const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+      camera.position.set(5.2, 4.2, 8.2);
+      camera.lookAt(0, 0.8, 0);
+
+      const group = new THREE.Group();
+      scene.add(group);
+
+      const materials = {
+        desk: new THREE.MeshStandardMaterial({ color: 0x2a2118, roughness: 0.8, metalness: 0.05 }),
+        cream: new THREE.MeshStandardMaterial({ color: 0xf6f1e7, roughness: 0.55, metalness: 0.05 }),
+        brass: new THREE.MeshStandardMaterial({ color: 0xb8a37f, roughness: 0.38, metalness: 0.35 }),
+        glass: new THREE.MeshStandardMaterial({ color: 0x7fd8b5, roughness: 0.12, metalness: 0.05, transparent: true, opacity: 0.42 }),
+        dark: new THREE.MeshStandardMaterial({ color: 0x10100e, roughness: 0.65, metalness: 0.18 }),
+        pink: new THREE.MeshStandardMaterial({ color: 0xff79b8, roughness: 0.42, metalness: 0.1 }),
+      };
+
+      const addBox = (name, size, position, material) => {
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), material);
+        mesh.name = name;
+        mesh.position.set(...position);
+        group.add(mesh);
+        return mesh;
+      };
+
+      const addSphere = (name, radius, position, material, scale = [1, 1, 1]) => {
+        const mesh = new THREE.Mesh(new THREE.SphereGeometry(radius, 32, 24), material);
+        mesh.name = name;
+        mesh.position.set(...position);
+        mesh.scale.set(...scale);
+        group.add(mesh);
+        return mesh;
+      };
+
+      addBox('clinical desk', [7.2, 0.28, 3.8], [0, -0.15, 0], materials.desk);
+      addBox('monitor base', [1.4, 0.18, 0.8], [0, 0.16, -0.78], materials.dark);
+      addBox('kinelo monitor', [2.7, 1.55, 0.16], [0, 1.18, -1.05], materials.dark);
+      addBox('monitor glow', [2.38, 1.2, 0.03], [0, 1.2, -0.95], materials.glass);
+      addBox('paper stack 1', [1.0, 0.08, 0.72], [-2.35, 0.1, 0.35], materials.cream);
+      addBox('paper stack 2', [1.05, 0.08, 0.72], [-2.32, 0.22, 0.32], materials.brass);
+      addBox('hermes server', [0.8, 1.0, 0.65], [2.55, 0.52, -0.45], materials.dark);
+      addBox('tap timer', [0.82, 0.2, 0.82], [1.85, 0.08, 0.82], materials.brass);
+      addSphere('face model', 0.58, [-1.55, 0.62, -0.55], materials.pink, [0.82, 1.1, 0.62]);
+      addSphere('finger tap node', 0.18, [1.85, 0.38, 0.82], materials.glass);
+      addSphere('visual prm node', 0.16, [-2.35, 0.46, 0.36], materials.glass);
+      addSphere('mission control node', 0.2, [2.55, 1.16, -0.45], materials.glass);
+
+      const curveMaterial = new THREE.LineBasicMaterial({ color: 0xb8a37f, transparent: true, opacity: 0.42 });
+      const makeLine = (points) => {
+        const geometry = new THREE.BufferGeometry().setFromPoints(points.map((p) => new THREE.Vector3(...p)));
+        const line = new THREE.Line(geometry, curveMaterial);
+        group.add(line);
+      };
+      makeLine([[0, 1.2, -0.85], [-1.55, 0.75, -0.55], [-2.35, 0.48, 0.36]]);
+      makeLine([[0, 1.2, -0.85], [1.85, 0.42, 0.82], [2.55, 1.16, -0.45]]);
+
+      const grid = new THREE.GridHelper(8, 18, 0xb8a37f, 0x4b4233);
+      grid.position.y = -0.28;
+      group.add(grid);
+
+      scene.add(new THREE.AmbientLight(0xf6f1e7, 1.2));
+      const key = new THREE.DirectionalLight(0xf6f1e7, 2.6);
+      key.position.set(3, 6, 4);
+      scene.add(key);
+      const accent = new THREE.PointLight(0x80d8b7, 3.5, 7);
+      accent.position.set(-2, 2.6, 1.6);
+      scene.add(accent);
+
+      const pointer = { x: 0, y: 0 };
+      labHero.addEventListener('pointermove', (event) => {
+        const rect = labHero.getBoundingClientRect();
+        pointer.x = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+        pointer.y = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+      });
+
+      const resize = () => {
+        const width = labHero.clientWidth;
+        const height = labHero.clientHeight;
+        renderer.setSize(width, height, false);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+      };
+      resize();
+      window.addEventListener('resize', resize);
+
+      const clock = new THREE.Clock();
+      const animate = () => {
+        const elapsed = clock.getElapsedTime();
+        group.rotation.y = -0.22 + pointer.x * 0.12 + Math.sin(elapsed * 0.28) * 0.03;
+        group.rotation.x = -0.02 + pointer.y * 0.04;
+        group.children.forEach((child) => {
+          if (child.name?.includes('node') || child.name?.includes('model')) {
+            child.position.y += Math.sin(elapsed * 1.8 + child.id) * 0.0009;
+          }
+        });
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      };
+
+      labHero.classList.add('is-webgl-ready');
+      animate();
+    }
   </script>
 </body>
 </html>`;
