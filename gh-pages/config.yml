@@ -169,6 +169,30 @@ sections:
         meta: "Literature track"
         status: "Notes"
 
+      - title: "PD4T Dataset"
+        subtitle: "Parkinson action quality assessment"
+        description: "Bridge note for Parkinson motor assessment datasets and Hawkeye-related video evaluation."
+        meta: "Paper bridge"
+        status: "Brain note"
+
+      - title: "PathVQA Dataset"
+        subtitle: "Medical VQA dataset anchor"
+        description: "Bridge note for pathology visual question answering and VisualPRM dataset grounding."
+        meta: "Paper bridge"
+        status: "Brain note"
+
+      - title: "Rehab Datasets Review"
+        subtitle: "Exercise quality and rehab benchmarks"
+        description: "UI-PRMD, KiMoRe, MobiPhysio, FineRehab, and related rehabilitation dataset references."
+        meta: "Paper bridge"
+        status: "Brain note"
+
+      - title: "Medical RAG Survey"
+        subtitle: "Medical and visual-grounded RAG"
+        description: "Reference bridge for medical RAG and visual-grounded retrieval patterns."
+        meta: "Paper bridge"
+        status: "Brain note"
+
   - id: "social"
     label: "Social"
     title: "Social & Contact"
