@@ -791,13 +791,15 @@ const html = String.raw`<!DOCTYPE html>
     let monitorCanvas;
     let monitorContext;
     let liveMonitorPlane;
+    let activeMonitorKey = 'home';
+    let monitorClickZones = [];
 
     const showOnMonitor = (key) => {
+      activeMonitorKey = key;
       currentMonitorEntry = monitorEntries[key] || monitorEntries.home;
       drawMonitorScreen(currentMonitorEntry);
       focusMonitor();
       updateMonitorOs(key);
-      monitorOs.classList.add('is-visible');
       if (objectStatus) objectStatus.textContent = currentMonitorEntry.title + ' shown on computer';
     };
 
@@ -841,7 +843,7 @@ const html = String.raw`<!DOCTYPE html>
     };
 
     const jumpNames = new Set(['Backpack', 'Book', 'Cactus', 'Can1', 'Can2', 'Can3', 'Mat', 'Mug', 'Name', 'Pokeball', 'Rubix Cube', 'Skateboard']);
-    const intersectObjectsNames = new Set([...Object.keys(objectActions), ...jumpNames, 'Chair']);
+    const intersectObjectsNames = new Set([...Object.keys(objectActions), ...jumpNames, 'Chair', 'LiveMonitorScreen']);
     const intersectObjects = [];
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
@@ -925,6 +927,7 @@ const html = String.raw`<!DOCTYPE html>
     function drawMonitorScreen(entry = monitorEntries.home) {
       if (!monitorContext || !monitorTexture) return;
 
+      monitorClickZones = [];
       monitorContext.fillStyle = '#08091a';
       monitorContext.fillRect(0, 0, monitorCanvas.width, monitorCanvas.height);
 
@@ -935,38 +938,80 @@ const html = String.raw`<!DOCTYPE html>
       monitorContext.fillStyle = gradient;
       monitorContext.fillRect(0, 0, monitorCanvas.width, monitorCanvas.height);
 
+      monitorContext.fillStyle = 'rgba(248, 237, 255, 0.08)';
+      for (let x = 0; x < monitorCanvas.width; x += 32) {
+        monitorContext.fillRect(x, 0, 1, monitorCanvas.height);
+      }
+      for (let y = 0; y < monitorCanvas.height; y += 32) {
+        monitorContext.fillRect(0, y, monitorCanvas.width, 1);
+      }
+
       monitorContext.strokeStyle = '#525ceb';
       monitorContext.lineWidth = 18;
       monitorContext.strokeRect(22, 22, monitorCanvas.width - 44, monitorCanvas.height - 44);
 
+      monitorContext.fillStyle = 'rgba(248, 237, 255, 0.92)';
+      monitorContext.fillRect(34, 34, 270, monitorCanvas.height - 68);
+      monitorContext.strokeStyle = '#525ceb';
+      monitorContext.lineWidth = 8;
+      monitorContext.strokeRect(34, 34, 270, monitorCanvas.height - 68);
+
+      const menuItems = [
+        ['physio', 'physio_app'],
+        ['face', 'Face Fitness'],
+        ['hawkeye', 'Hawkeye'],
+        ['github', 'GitHub'],
+        ['portfolio', 'Profile'],
+      ];
+      monitorContext.font = '900 30px Montserrat, sans-serif';
+      menuItems.forEach(([key, label], index) => {
+        const x = 58;
+        const y = 76 + index * 86;
+        const w = 220;
+        const h = 58;
+        const active = key === activeMonitorKey;
+        monitorContext.fillStyle = active ? '#525ceb' : '#ffffff';
+        monitorContext.fillRect(x, y, w, h);
+        monitorContext.strokeStyle = '#525ceb';
+        monitorContext.lineWidth = 5;
+        monitorContext.strokeRect(x, y, w, h);
+        monitorContext.fillStyle = active ? '#f8edff' : '#525ceb';
+        monitorContext.fillText(label, x + 16, y + 39);
+        monitorClickZones.push({ key, x, y, w, h, type: 'select' });
+      });
+
+      const contentX = 350;
+
       monitorContext.fillStyle = '#80d8b7';
       monitorContext.font = '700 38px Montserrat, sans-serif';
-      monitorContext.fillText(entry.eyebrow, 64, 92);
+      monitorContext.fillText(entry.eyebrow, contentX, 100);
 
       monitorContext.fillStyle = '#f8edff';
-      monitorContext.font = '900 82px Montserrat, sans-serif';
+      monitorContext.font = '900 76px Montserrat, sans-serif';
       const titleLines = entry.title.split(' ');
       if (titleLines.length > 1 && entry.title.length > 13) {
-        monitorContext.fillText(titleLines.slice(0, -1).join(' '), 64, 190);
-        monitorContext.fillText(titleLines.slice(-1).join(' '), 64, 282);
+        monitorContext.fillText(titleLines.slice(0, -1).join(' '), contentX, 190);
+        monitorContext.fillText(titleLines.slice(-1).join(' '), contentX, 274);
       } else {
-        monitorContext.fillText(entry.title, 64, 210);
+        monitorContext.fillText(entry.title, contentX, 210);
       }
 
       monitorContext.fillStyle = 'rgba(248, 237, 255, 0.78)';
       monitorContext.font = '700 32px Montserrat, sans-serif';
       const bodyStart = entry.title.length > 13 ? 350 : 300;
-      const nextY = wrapText(entry.body, 64, bodyStart, 880, 48);
+      const nextY = wrapText(entry.body, contentX, bodyStart, 600, 48);
 
       monitorContext.fillStyle = '#525ceb';
-      monitorContext.fillRect(64, Math.min(nextY + 28, 500), 340, 58);
+      const buttonY = Math.min(nextY + 28, 520);
+      monitorContext.fillRect(contentX, buttonY, 320, 58);
       monitorContext.fillStyle = '#f8edff';
       monitorContext.font = '900 30px Montserrat, sans-serif';
-      monitorContext.fillText('OPEN SELECTED', 92, Math.min(nextY + 68, 540));
+      monitorContext.fillText('OPEN SELECTED', contentX + 28, buttonY + 40);
+      monitorClickZones.push({ key: activeMonitorKey, x: contentX, y: buttonY, w: 320, h: 58, type: 'open' });
 
       monitorContext.fillStyle = 'rgba(248, 237, 255, 0.48)';
       monitorContext.font = '700 22px Montserrat, sans-serif';
-      monitorContext.fillText('Click another object to change this monitor.', 64, 650);
+      monitorContext.fillText('Select folders on this computer screen.', contentX, 650);
 
       monitorTexture.needsUpdate = true;
     }
@@ -1002,6 +1047,7 @@ const html = String.raw`<!DOCTYPE html>
       monitorPlane.lookAt(camera.position);
       model.add(monitorPlane);
       liveMonitorPlane = monitorPlane;
+      intersectObjects.push(monitorPlane);
 
       if (screen.isMesh) {
         screen.material = new THREE.MeshBasicMaterial({
@@ -1012,6 +1058,27 @@ const html = String.raw`<!DOCTYPE html>
         });
       }
       drawMonitorScreen(monitorEntries.home);
+    }
+
+    function handleMonitorUv(uv) {
+      if (!uv) return false;
+      const x = uv.x * monitorCanvas.width;
+      const y = (1 - uv.y) * monitorCanvas.height;
+      const zone = monitorClickZones.find((item) => (
+        x >= item.x && x <= item.x + item.w && y >= item.y && y <= item.y + item.h
+      ));
+      window.KINELO_LAST_MONITOR_CLICK = {
+        uv: { x: uv.x, y: uv.y },
+        canvas: { x, y },
+        zone: zone ? { key: zone.key, type: zone.type } : null,
+      };
+      if (!zone) return false;
+      if (zone.type === 'open') {
+        if (currentMonitorEntry?.url) window.open(currentMonitorEntry.url, '_blank', 'noopener,noreferrer');
+        return true;
+      }
+      showOnMonitor(zone.key);
+      return true;
     }
 
     function addComputerHotspot(model) {
@@ -1119,8 +1186,11 @@ const html = String.raw`<!DOCTYPE html>
         return;
       }
       const intersects = intersectFromEvent(event);
+      const monitorHit = intersects.find((hit) => hit.object.name === 'LiveMonitorScreen');
       const target = intersects.length ? resolveInteractable(intersects[0].object) : null;
-      const label = target ? objectLabels[target.name] : '';
+      const label = monitorHit
+        ? 'Select inside computer screen'
+        : target ? objectLabels[target.name] : '';
       canvas.style.cursor = label ? 'pointer' : 'grab';
       if (objectStatus) {
         objectStatus.textContent = label || 'Computer, GitHub, book, mug, chair objects are active';
@@ -1131,6 +1201,12 @@ const html = String.raw`<!DOCTYPE html>
       if (!welcome.classList.contains('hidden') || !popup.classList.contains('hidden')) return;
       const intersects = intersectFromEvent(event);
       if (!intersects.length) return;
+
+      const monitorHit = intersects.find((hit) => hit.object.name === 'LiveMonitorScreen');
+      if (monitorHit) {
+        handleMonitorUv(monitorHit.uv);
+        return;
+      }
 
       const target = resolveInteractable(intersects[0].object);
       const name = target.name;
@@ -1163,6 +1239,12 @@ const html = String.raw`<!DOCTYPE html>
           controls,
           intersectObjects,
           showOnMonitor,
+          get monitorClickZones() {
+            return monitorClickZones;
+          },
+          get lastMonitorClick() {
+            return window.KINELO_LAST_MONITOR_CLICK;
+          },
           get currentMonitorEntry() {
             return currentMonitorEntry;
           },
