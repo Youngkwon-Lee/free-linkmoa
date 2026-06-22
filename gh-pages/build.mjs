@@ -3,7 +3,7 @@
  * config.yml -> out/index.html
  */
 
-import { copyFileSync, existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { cpSync, copyFileSync, existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import yaml from 'js-yaml';
@@ -1335,11 +1335,14 @@ const css = `
   }
   .lab-hero {
     position: relative;
-    min-height: 92vh;
-    margin: 16px 0 44px;
-    border: 1px solid rgba(246,241,231,0.12);
+    min-height: 100vh;
+    margin: 0 0 44px;
+    border: 1px solid rgba(246,241,231,0.16);
+    border-radius: 28px;
     overflow: hidden;
-    background: #070705;
+    background:
+      radial-gradient(circle at 68% 36%, rgba(184,163,127,0.18), transparent 34%),
+      #070705;
     isolation: isolate;
   }
   #lab-scene {
@@ -1359,13 +1362,13 @@ const css = `
     padding: clamp(24px, 5vw, 68px);
     pointer-events: none;
     background:
-      linear-gradient(90deg, rgba(5,5,5,0.82), transparent 62%),
-      linear-gradient(0deg, rgba(5,5,5,0.72), transparent 42%);
+      linear-gradient(90deg, rgba(5,5,5,0.64), transparent 48%),
+      linear-gradient(0deg, rgba(5,5,5,0.62), transparent 34%);
   }
   .lab-overlay h1 {
-    max-width: 820px;
+    max-width: 780px;
     margin: 0;
-    font-size: clamp(4.2rem, 12vw, 12rem);
+    font-size: clamp(3.8rem, 10vw, 9.8rem);
     line-height: 0.78;
     letter-spacing: -0.115em;
   }
@@ -1412,6 +1415,14 @@ const css = `
     letter-spacing: 0.12em;
     background: radial-gradient(circle, rgba(184,163,127,0.16), transparent 54%);
   }
+  .lab-panel {
+    width: min(520px, 100%);
+    border: 1px solid rgba(246,241,231,0.14);
+    border-radius: 24px;
+    padding: clamp(18px, 3vw, 28px);
+    background: rgba(5,5,5,0.34);
+    backdrop-filter: blur(18px);
+  }
   .lab-hero.is-webgl-ready .lab-fallback {
     display: none;
   }
@@ -1421,6 +1432,9 @@ const css = `
     }
     .lab-overlay {
       background: linear-gradient(0deg, rgba(5,5,5,0.88), rgba(5,5,5,0.38));
+    }
+    .lab-overlay h1 {
+      font-size: clamp(3.4rem, 17vw, 7rem);
     }
   }
 `.trim();
@@ -1462,7 +1476,7 @@ const html = `<!DOCTYPE html>
       <canvas id="lab-scene"></canvas>
       <div class="lab-fallback">Clinical AI Lab Desk loading</div>
       <div class="lab-overlay">
-        <div>
+        <div class="lab-panel">
           <div class="lab-kicker">Interactive Lab Desk / Three.js MVP</div>
           <h1>Clinical AI Lab.</h1>
           <p>Explore Kinelo as a working desk: product monitor, facial analysis model, finger-tap timer, research stack, and Hermes operations node.</p>
@@ -1595,8 +1609,8 @@ const html = `<!DOCTYPE html>
   <script type="importmap">
     {
       "imports": {
-        "three": "https://unpkg.com/three@0.164.1/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.164.1/examples/jsm/"
+        "three": "./assets/three/three.module.js",
+        "three/addons/": "./assets/three/addons/"
       }
     }
   </script>
@@ -1609,7 +1623,7 @@ const html = `<!DOCTYPE html>
     const canvas = document.getElementById('lab-scene');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (labHero && canvas && !reducedMotion) {
+    if (labHero && canvas) {
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -1617,9 +1631,9 @@ const html = `<!DOCTYPE html>
       const scene = new THREE.Scene();
       scene.fog = new THREE.FogExp2(0x070705, 0.065);
 
-      const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-      camera.position.set(5.2, 4.2, 8.2);
-      camera.lookAt(0, 0.8, 0);
+      const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+      camera.position.set(14.7, 8.2, 6.1);
+      camera.lookAt(-1, 3, -1.5);
 
       const room = new THREE.Group();
       scene.add(room);
@@ -1637,35 +1651,34 @@ const html = `<!DOCTYPE html>
               }
             }
           });
-          const box = new THREE.Box3().setFromObject(gltf.scene);
-          const center = box.getCenter(new THREE.Vector3());
-          gltf.scene.position.sub(center);
-          gltf.scene.scale.setScalar(1.14);
           labHero.classList.add('is-webgl-ready');
         },
         undefined,
-        () => {
+        (error) => {
+          console.error('Clinical AI Lab Desk GLB failed to load', error);
           labHero.classList.remove('is-webgl-ready');
         },
       );
 
-      scene.add(new THREE.AmbientLight(0xf6f1e7, 1.2));
-      const key = new THREE.DirectionalLight(0xf6f1e7, 2.6);
-      key.position.set(3, 6, 4);
+      scene.add(new THREE.AmbientLight(0xd0d0ff, 0.72));
+      const key = new THREE.DirectionalLight(0xffffeb, 2.4);
+      key.position.set(15, 25, 10);
       scene.add(key);
-      const accent = new THREE.PointLight(0x80d8b7, 3.5, 7);
-      accent.position.set(-2, 2.6, 1.6);
+      const accent = new THREE.DirectionalLight(0xddefff, 0.85);
+      accent.position.set(-8, 12, 0);
       scene.add(accent);
 
       const controls = new OrbitControls(camera, canvas);
       controls.enablePan = false;
       controls.enableDamping = true;
       controls.dampingFactor = 0.055;
-      controls.minDistance = 7.5;
-      controls.maxDistance = 18;
-      controls.minPolarAngle = Math.PI / 4.2;
-      controls.maxPolarAngle = Math.PI / 2.08;
-      controls.target.set(0, 0.8, 0);
+      controls.minDistance = 10;
+      controls.maxDistance = 30;
+      controls.minPolarAngle = Math.PI / 4;
+      controls.maxPolarAngle = Math.PI / 2;
+      controls.minAzimuthAngle = 0;
+      controls.maxAzimuthAngle = Math.PI / 2;
+      controls.target.set(-1, 3, -1.5);
 
       const pointer = { x: 0, y: 0 };
       labHero.addEventListener('pointermove', (event) => {
@@ -1687,8 +1700,9 @@ const html = `<!DOCTYPE html>
       const clock = new THREE.Clock();
       const animate = () => {
         const elapsed = clock.getElapsedTime();
-        room.rotation.y = -0.34 + pointer.x * 0.12 + Math.sin(elapsed * 0.22) * 0.025;
-        room.rotation.x = pointer.y * 0.025;
+        const idleMotion = reducedMotion ? 0 : Math.sin(elapsed * 0.22) * 0.015;
+        room.rotation.y = pointer.x * 0.035 + idleMotion;
+        room.rotation.x = pointer.y * 0.01;
         controls.update();
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
@@ -1706,6 +1720,10 @@ mkdirSync(join(outDir, 'assets'), { recursive: true });
 const roomModelPath = join(__dirname, 'assets', 'portfolio_room.glb');
 if (existsSync(roomModelPath)) {
   copyFileSync(roomModelPath, join(outDir, 'assets', 'portfolio_room.glb'));
+}
+const threeRuntimePath = join(__dirname, 'assets', 'three');
+if (existsSync(threeRuntimePath)) {
+  cpSync(threeRuntimePath, join(outDir, 'assets', 'three'), { recursive: true });
 }
 writeFileSync(join(outDir, 'index.html'), html, 'utf8');
 
