@@ -452,7 +452,7 @@ const html = String.raw`<!DOCTYPE html>
     </button>
     <div class="hint-chip">
       <strong>Click the room</strong>
-      <span>Monitor, GitHub, book, chair objects are active</span>
+      <span id="object-status">Computer, GitHub, book, mug, chair objects are active</span>
     </div>
   </div>
 
@@ -468,6 +468,7 @@ const html = String.raw`<!DOCTYPE html>
       <div class="popup-body">
         <h1 class="hero-title">Kinelo Lab Room</h1>
         <p class="lead">${esc(hero.description || profile.bio || '')}</p>
+        <p class="lead">이 창을 닫은 다음 방 안의 컴퓨터, Portfolio 간판, GitHub 아이콘, 책, 머그컵, 의자를 직접 클릭할 수 있습니다.</p>
         <div class="quick-links">
           ${projects.slice(0, 5).map(linkButton).join('')}
         </div>
@@ -535,15 +536,41 @@ const html = String.raw`<!DOCTYPE html>
     const brandOpen = document.getElementById('brand-open');
     const closePopupButton = document.getElementById('popup-exit-button');
     const closeWelcomeButton = document.getElementById('welcome-exit-button');
+    const objectStatus = document.getElementById('object-status');
 
     const objectActions = {
       Portfolio: () => popup.classList.toggle('hidden'),
+      Table: () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
+      ComputerHotspot: () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
+      'PC Screen': () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
+      Mousepad: () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
+      Keyboard: () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
+      Mouse: () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
+      'PC Tower': () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
       Github: () => window.open('https://github.com/Youngkwon-Lee', '_blank', 'noopener,noreferrer'),
       TwitterX: () => window.open('https://x.com/Yoonjun_dev', '_blank', 'noopener,noreferrer'),
       Book: () => window.open('https://github.com/Youngkwon-Lee/Hawkeye_paper', '_blank', 'noopener,noreferrer'),
       Backpack: () => window.open('https://physio-app-steel.vercel.app', '_blank', 'noopener,noreferrer'),
       Mug: () => window.open('https://face-fitness.vercel.app', '_blank', 'noopener,noreferrer'),
       Name: () => popup.classList.toggle('hidden'),
+    };
+
+    const objectLabels = {
+      Portfolio: 'Portfolio panel',
+      Table: 'Computer desk -> physio_app',
+      ComputerHotspot: 'Computer -> physio_app',
+      'PC Screen': 'Computer -> physio_app',
+      Mousepad: 'Mousepad -> physio_app',
+      Keyboard: 'Keyboard -> physio_app',
+      Mouse: 'Mouse -> physio_app',
+      'PC Tower': 'PC tower -> physio_app',
+      Github: 'GitHub -> Youngkwon-Lee',
+      TwitterX: 'X -> Yoonjun_dev',
+      Book: 'Book -> Hawkeye research',
+      Backpack: 'Backpack -> Kinelo',
+      Mug: 'Mug -> Face Fitness',
+      Name: 'Name plate -> Portfolio',
+      Chair: 'Chair -> spin',
     };
 
     const jumpNames = new Set(['Backpack', 'Book', 'Cactus', 'Can1', 'Can2', 'Can3', 'Mat', 'Mug', 'Name', 'Pokeball', 'Rubix Cube', 'Skateboard']);
@@ -610,6 +637,32 @@ const html = String.raw`<!DOCTYPE html>
       scene.add(fill);
     }
 
+    function addComputerHotspot(model) {
+      const parts = ['PC Screen', 'Keyboard', 'Mouse', 'Mousepad', 'PC Tower']
+        .map((name) => model.getObjectByName(name))
+        .filter(Boolean);
+      if (!parts.length) return;
+
+      const box = new THREE.Box3();
+      parts.forEach((part) => box.expandByObject(part));
+      box.expandByScalar(0.35);
+
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      const hotspot = new THREE.Mesh(
+        new THREE.BoxGeometry(size.x, size.y, size.z),
+        new THREE.MeshBasicMaterial({
+          transparent: true,
+          opacity: 0.001,
+          depthWrite: false,
+        }),
+      );
+      hotspot.name = 'ComputerHotspot';
+      hotspot.position.copy(center);
+      model.add(hotspot);
+      intersectObjects.push(hotspot);
+    }
+
     function resize() {
       const width = window.innerWidth;
       const height = window.innerHeight;
@@ -643,16 +696,44 @@ const html = String.raw`<!DOCTYPE html>
       requestAnimationFrame(tick);
     }
 
-    function handlePointer(event) {
+    function resolveInteractable(object) {
+      let current = object;
+      while (current) {
+        if (intersectObjectsNames.has(current.name)) return current;
+        current = current.parent;
+      }
+      return object;
+    }
+
+    function intersectFromEvent(event) {
       const rect = canvas.getBoundingClientRect();
       pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
       pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       raycaster.setFromCamera(pointer, camera);
-      const intersects = raycaster.intersectObjects(intersectObjects, true);
+      return raycaster.intersectObjects(intersectObjects, true);
+    }
+
+    function handleHover(event) {
+      if (!welcome.classList.contains('hidden') || !popup.classList.contains('hidden')) {
+        canvas.style.cursor = 'grab';
+        return;
+      }
+      const intersects = intersectFromEvent(event);
+      const target = intersects.length ? resolveInteractable(intersects[0].object) : null;
+      const label = target ? objectLabels[target.name] : '';
+      canvas.style.cursor = label ? 'pointer' : 'grab';
+      if (objectStatus) {
+        objectStatus.textContent = label || 'Computer, GitHub, book, mug, chair objects are active';
+      }
+    }
+
+    function handlePointer(event) {
+      if (!welcome.classList.contains('hidden') || !popup.classList.contains('hidden')) return;
+      const intersects = intersectFromEvent(event);
       if (!intersects.length) return;
 
-      const target = intersects[0].object.parent || intersects[0].object;
-      const name = target.name || intersects[0].object.name;
+      const target = resolveInteractable(intersects[0].object);
+      const name = target.name;
       if (objectActions[name]) {
         objectActions[name]();
       } else if (name === 'Chair') {
@@ -673,7 +754,9 @@ const html = String.raw`<!DOCTYPE html>
             child.receiveShadow = true;
           }
         });
+        addComputerHotspot(glb.scene);
         scene.add(glb.scene);
+        window.KINELO_ROOM = { scene, camera, controls, intersectObjects };
         setupLights();
         loading.classList.add('hidden');
       },
@@ -690,6 +773,7 @@ const html = String.raw`<!DOCTYPE html>
     closePopupButton.addEventListener('click', () => popup.classList.add('hidden'));
     closeWelcomeButton.addEventListener('click', () => welcome.classList.add('hidden'));
     window.addEventListener('pointerdown', handlePointer);
+    window.addEventListener('pointermove', handleHover);
     window.addEventListener('resize', resize);
 
     function animate() {
