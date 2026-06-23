@@ -56,6 +56,27 @@ const linkCards = enabledLinks.map((link, index) => {
   </a>`;
 }).join('\n      ');
 
+const profileMark = `<svg class="profile-mark" viewBox="0 0 180 180" role="img" aria-label="Youngkwon Lee signal mark">
+  <defs>
+    <linearGradient id="markGradient" x1="20" y1="18" x2="158" y2="162" gradientUnits="userSpaceOnUse">
+      <stop stop-color="${esc(t.accent)}"/>
+      <stop offset="1" stop-color="${esc(t.accent_2)}"/>
+    </linearGradient>
+    <filter id="markGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.55 0 0 0 0 0.85 0 0 0 0 0.74 0 0 0 0.55 0"/>
+      <feBlend in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <rect x="15" y="15" width="150" height="150" rx="42" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.14)"/>
+  <path d="M48 118C58 82 76 61 103 55c15-3 29 1 39 9" fill="none" stroke="url(#markGradient)" stroke-width="9" stroke-linecap="round" filter="url(#markGlow)"/>
+  <path d="M48 118c23-9 44-9 63 0 13 6 23 15 31 28" fill="none" stroke="rgba(243,247,244,0.7)" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="62" cy="95" r="6" fill="${esc(t.accent_2)}"/>
+  <circle cx="103" cy="55" r="7" fill="${esc(t.accent)}"/>
+  <circle cx="142" cy="64" r="5" fill="${esc(t.accent_2)}"/>
+  <text x="90" y="105" text-anchor="middle" font-family="Archivo, sans-serif" font-size="34" font-weight="800" fill="${esc(t.text)}" letter-spacing="-3">YK</text>
+</svg>`;
+
 const html = `<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -135,6 +156,17 @@ const html = `<!DOCTYPE html>
       border-radius: 999px;
       background: rgba(139, 216, 189, 0.14);
       filter: blur(6px);
+    }
+
+    .profile-mark {
+      position: absolute;
+      right: -22px;
+      bottom: -34px;
+      width: 180px;
+      height: 180px;
+      opacity: 0.58;
+      transform: rotate(-7deg);
+      pointer-events: none;
     }
 
     .avatar-row {
@@ -286,6 +318,11 @@ const html = `<!DOCTYPE html>
       text-align: center;
     }
 
+    .footer strong {
+      color: rgba(139, 216, 189, 0.82);
+      font-weight: 800;
+    }
+
     @keyframes rise {
       from {
         opacity: 0;
@@ -331,6 +368,7 @@ const html = `<!DOCTYPE html>
 <body>
   <main class="shell">
     <section class="profile" aria-label="Youngkwon Lee profile">
+      ${profileMark}
       <div class="avatar-row">
         ${profile.avatar ? `<img class="avatar" src="${esc(profile.avatar)}" alt="${esc(profile.name || 'Youngkwon Lee')}">` : '<div class="avatar"></div>'}
         <div class="identity">
@@ -350,7 +388,7 @@ const html = `<!DOCTYPE html>
       ${linkCards}
     </nav>
 
-    <p class="footer">free-linkmoa · SNS links only</p>
+    <p class="footer"><strong>free-linkmoa</strong> · SNS links only · SVG signal mark</p>
   </main>
 </body>
 </html>`;
